@@ -3,9 +3,8 @@ package com.math.taskmanager.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,8 +23,4 @@ public class User {
     private String password;
 
     private String name;
-
-    // 🔗 Um usuário pode ter várias tarefas
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks;
 }

@@ -20,12 +20,12 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "O título é obrigatório")
-    @Size(min = 3, max = 100, message = "O título deve ter entre 3 a 100 caracteres")
+    @NotBlank
+    @Size(min = 3, max = 100)
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Size(max = 255, message = "A descrição pode ter no máximo 255 caracteres")
+    @Size(max = 255)
     @Column(length = 255)
     private String description;
 
