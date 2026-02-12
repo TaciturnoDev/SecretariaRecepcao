@@ -2,6 +2,7 @@ package com.math.taskmanager.dto;
 
 import com.math.taskmanager.entity.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record TaskRequestDTO(
@@ -13,6 +14,9 @@ public record TaskRequestDTO(
     @Size(max = 255, message = "A descrição pode ter no máximo 255 caracteres")
     String description,
 
-    TaskStatus status
+    TaskStatus status,
+
+    @NotNull(message = "O userId é obrigatório")
+    Long userId
 
 ) {}
