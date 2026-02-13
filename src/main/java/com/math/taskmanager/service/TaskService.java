@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.math.taskmanager.dto.TaskRequestDTO;
 import com.math.taskmanager.dto.TaskResponseDTO;
 import com.math.taskmanager.entity.Task;
+import com.math.taskmanager.entity.TaskStatus;
 import com.math.taskmanager.entity.User;
 import com.math.taskmanager.exception.ResourceNotFoundException;
 import com.math.taskmanager.repository.TaskRepository;
@@ -77,6 +78,63 @@ public class TaskService {
         );
 
         return taskRepository.findByUserId(userId, pageable)
+                .map(this::toDTO);
+    }
+
+    // ========= FIND BY ID =========
+    public TaskResponseDTO findById(Long id) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Task não encontrada com ID: " + id
+                        )
+                );
+
+        return toDTO(task);
+    }
+
+    // ========= UPDATE =========
+    public TaskResponseDTO update(Long id, TaskRequestDTO dto) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Task não encontrada com ID: " + id
+                        )
+                );
+
+        task.setTitle(dto.title());
+        task.setDescription(dto.description());
+        task.setStatus(dto.status());
+
+        return toDTO(taskRepository.save(task));
+    }
+
+    // ========= DELETE =========
+    public void delete(Long id) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Task não encontrada com ID: " + id
+                        )
+                );
+
+        taskRepository.delete(task);
+    }
+
+    // ========= FIND BY STATUS =========
+    public Page<TaskResponseDTO> findByStatus(
+            TaskStatus status, int page, int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdAt").descending()
+        );
+
+        return taskRepository.findByStatus(status, pageable)
                 .map(this::toDTO);
     }
 }
