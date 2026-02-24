@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Recepção - SDE </title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Recepção e atendimentos</h1>
+
+<section>
+    <h2>Nova Tarefa</h2>
+
+    <button onclick="carregarTarefas()">Atualizar Lista</button>
+
+    <input id="title" placeholder="Título">
+    <input id="description" placeholder="Descrição">
+
+    <select id="status">
+        <option value="PENDING">Pendente</option>
+        <option value="IN_PROGRESS">Em Andamento</option>
+        <option value="DONE">Concluída</option>
+    </select>
+
+    <button onclick="createTask()">Criar</button>
+</section>
+
+<h2>Tarefas</h2>
+<ul id="taskList"></ul>
+
+<script src="app.js"></script>
+</body>
+</html>
