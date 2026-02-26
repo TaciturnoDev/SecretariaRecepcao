@@ -12,18 +12,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
+/**
+ * Controller REST responsável por expor os endpoints
+ * relacionados a tarefas (Task).
+ *
+ * Atua como camada de entrada da aplicação,
+ * delegando regras de negócio para o Service.
+ */
+
+@CrossOrigin(origins = "*") 
+// Permite chamadas do frontend (JS) independente da origem.
+// Em produção, isso deve ser restrito.
 @RestController
+// Indica que esta classe expõe endpoints REST
 @RequestMapping("/tasks")
+// Prefixo base da API: /tasks
 public class TaskController {
 
     private final TaskService taskService;
 
+    /**
+     * Injeção de dependência via construtor (boa prática).
+     * Evita uso de @Autowired em atributos.
+     */
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
     // ========= CREATE =========
+
+    /**
+     * Cria uma nova tarefa.
+     *
+     * HTTP: POST /tasks
+     * Body: TaskRequestDTO (validado)
+     * Retorno: TaskResponseDTO
+     * Status: 201 CREATED
+     */
     @PostMapping
     public ResponseEntity<TaskResponseDTO> create(
             @RequestBody @Valid TaskRequestDTO dto) {
@@ -34,6 +59,16 @@ public class TaskController {
     }
 
     // ========= LIST ALL (PAGINATED) =========
+
+    /**
+     * Lista todas as tarefas de forma paginada.
+     *
+     * HTTP: GET /tasks?page=0&size=5
+     * Retorno: Page<TaskResponseDTO>
+     *
+     * page -> página atual (0-based)
+     * size -> quantidade de registros por página
+     */
     @GetMapping
     public ResponseEntity<Page<TaskResponseDTO>> findAll(
             @RequestParam(defaultValue = "0") int page,
@@ -45,6 +80,15 @@ public class TaskController {
     }
 
     // ========= FIND BY ID =========
+
+    /**
+     * Busca uma tarefa pelo ID.
+     *
+     * HTTP: GET /tasks/{id}
+     * Retorno: TaskResponseDTO
+     *
+     * Se não existir, o Service deve lançar exceção tratada.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> findById(
             @PathVariable Long id) {
@@ -55,6 +99,14 @@ public class TaskController {
     }
 
     // ========= UPDATE =========
+
+    /**
+     * Atualiza uma tarefa existente.
+     *
+     * HTTP: PUT /tasks/{id}
+     * Body: TaskRequestDTO
+     * Retorno: TaskResponseDTO atualizado
+     */
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> update(
             @PathVariable Long id,
@@ -66,6 +118,16 @@ public class TaskController {
     }
 
     // ========= DELETE =========
+
+    /**
+     * Remove uma tarefa pelo ID.
+     *
+     * HTTP: DELETE /tasks/{id}
+     * Retorno: 204 No Content
+     *
+     * Boa prática REST:
+     * DELETE não retorna corpo.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable Long id) {
@@ -75,6 +137,14 @@ public class TaskController {
     }
 
     // ========= FIND BY STATUS =========
+
+    /**
+     * Lista tarefas filtrando por status.
+     *
+     * HTTP: GET /tasks/status/PENDING?page=0&size=5
+     *
+     * TaskStatus é um enum, o Spring faz o bind automaticamente.
+     */
     @GetMapping("/status/{status}")
     public ResponseEntity<Page<TaskResponseDTO>> findByStatus(
             @PathVariable TaskStatus status,
@@ -87,6 +157,12 @@ public class TaskController {
     }
 
     // ========= FIND BY USER =========
+
+    /**
+     * Lista tarefas de um usuário específico.
+     *
+     * HTTP: GET /tasks/user/{userId}?page=0&size=5
+     */
     @GetMapping("/user/{userId}")
     public ResponseEntity<Page<TaskResponseDTO>> findByUser(
             @PathVariable Long userId,

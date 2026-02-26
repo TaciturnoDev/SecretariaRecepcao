@@ -2,34 +2,78 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Recepção - SDE </title>
+    <title>Recepção - SDE</title>
 
+    <!-- CSS principal -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Recepção e atendimentos</h1>
+	
+<!-- ================= HEADER INSTITUCIONAL ================= -->
 
-<section>
-    <h2>Nova Tarefa</h2>
+<header class="header">
+    <h1>Secretaria do Desenvolvimento Econômico</h1>
+    <span>Sistema de Recepção e Atendimentos</span>
+</header>
 
-    <button onclick="carregarTarefas()">Atualizar Lista</button>
+<!-- ================= LAYOUT PRINCIPAL ================= -->
+<div class="page-container">
 
-    <input id="title" placeholder="Título">
-    <input id="description" placeholder="Descrição">
+	
+    <!-- ================= ÁREA ÚTIL (ESQUERDA) ================= -->
+    <main class="content">
 
-    <select id="status">
-        <option value="PENDING">Pendente</option>
-        <option value="IN_PROGRESS">Em Andamento</option>
-        <option value="DONE">Concluída</option>
-    </select>
+		
+        <!-- ================= FORMULÁRIO ================= -->
+        <div class="form-card">
+            <h2>Nova Tarefa</h2>
 
-    <button onclick="createTask()">Criar</button>
-</section>
+            <input id="title" placeholder="Título">
+            <input id="description" placeholder="Descrição">
 
-<h2>Tarefas</h2>
-<ul id="taskList"></ul>
+            <select id="status">
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em andamento</option>
+                <option value="COMPLETED">Concluída</option>
+            </select>
 
+            <button id="submitBtn" onclick="createTask()">Criar</button>
+        </div>
+
+		<!-- ================= BUSCA E FILTRO ================= -->
+		<div class="task-filters">
+
+		    <!-- Busca -->
+		    <input 
+		        type="text" 
+		        id="searchInput" 
+		        placeholder="Buscar por nome, descrição ou CPF"
+		        oninput="aplicarFiltros()"
+		    >
+
+		    <!-- Filtro por status -->
+		    <select id="filterStatus" onchange="aplicarFiltros()">
+		        <option value="ALL">Todos</option>
+		        <option value="PENDING">Pendente</option>
+		        <option value="IN_PROGRESS">Em andamento</option>
+		        <option value="COMPLETED">Concluída</option>
+		    </select>
+
+		</div>
+		
+        <!-- ================= LISTA DE TAREFAS ================= -->
+        <h2>Tarefas</h2>
+        <ul id="taskList"></ul>
+
+    </main>
+
+    <!-- ================= BACKGROUND (DIREITA) ================= -->
+    <aside class="background-image"></aside>
+
+</div>
+
+<!-- ================= JS ================= -->
 <script src="app.js"></script>
 </body>
 </html>
