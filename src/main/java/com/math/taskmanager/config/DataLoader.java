@@ -6,8 +6,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Classe responsável por inserir dados iniciais no banco
- * Útil para ambiente de desenvolvimento
+ * Classe responsável por inserir dados iniciais no banco.
+ * Executa automaticamente quando a aplicação sobe.
+ * Ideal apenas para ambiente de desenvolvimento.
  */
 @Configuration
 public class DataLoader implements CommandLineRunner {
@@ -21,17 +22,20 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // Evita criar o usuário mais de uma vez
+        /*
+         * Evita recriar dados toda vez que a aplicação reinicia.
+         */
         if (userRepository.count() == 0) {
 
-            User user = new User();
-            user.setName("Usuário Padrão");
-            user.setEmail("admin@taskmanager.local");
-            user.setPassword("123456"); // depois entra criptografia
+            User user = User.builder()
+                    .name("Marcos")
+                    .cpf("564.321.653-58")
+                    .active(true)
+                    .build();
 
             userRepository.save(user);
 
-            System.out.println("✔ Usuário padrão criado com ID = " + user.getId());
+            System.out.println("✔ Funcionário padrão criado com ID = " + user.getId());
         }
     }
 }

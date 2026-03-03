@@ -3,6 +3,7 @@ package com.math.taskmanager.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -34,18 +35,26 @@ class TaskServiceTest {
 
     @Test
     void deveCriarTarefaComSucesso() {
-        // arrange
+
+        // =========================
+        // ARRANGE
+        // =========================
+
         User user = new User();
         user.setId(1L);
+        user.setName("Marcos");
 
         Task task = new Task();
         task.setId(1L);
         task.setTitle("Teste");
+        task.setDescription("Descrição");
+        task.setStatus(TaskStatus.PENDING);
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUser(user);
 
         TaskRequestDTO dto = new TaskRequestDTO(
                 "Teste",
                 "Descrição",
-                TaskStatus.PENDING,
                 1L
         );
 
@@ -55,28 +64,43 @@ class TaskServiceTest {
         when(taskRepository.save(any(Task.class)))
                 .thenReturn(task);
 
-        // act
+        // =========================
+        // ACT
+        // =========================
+
         TaskResponseDTO response = taskService.create(dto);
 
-        // assert
+        // =========================
+        // ASSERT
+        // =========================
+
         assertNotNull(response);
         assertEquals("Teste", response.title());
+        assertEquals(TaskStatus.PENDING, response.status());
+        assertEquals(1L, response.userId());
+        assertEquals("Marcos", response.userName());
     }
 
     @Test
     void deveLancarErroQuandoUsuarioNaoExiste() {
-        // arrange
+
+        // =========================
+        // ARRANGE
+        // =========================
+
         TaskRequestDTO dto = new TaskRequestDTO(
                 "Teste",
                 "Descrição",
-                TaskStatus.PENDING,
                 99L
         );
 
         when(userRepository.findById(99L))
                 .thenReturn(Optional.empty());
 
-        // act + assert
+        // =========================
+        // ACT + ASSERT
+        // =========================
+
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> taskService.create(dto)

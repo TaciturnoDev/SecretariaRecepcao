@@ -13,6 +13,21 @@
 <header class="header">
     <h1>Secretaria do Desenvolvimento Econômico</h1>
     <span>Sistema de Recepção e Atendimentos</span>
+	
+	<div class="user-container">
+
+	    <span id="loggedUserName" class="logged-user-name"></span>
+
+	    <div class="user-icon" id="userIcon" onclick="toggleUserBox()">
+	        👤
+	    </div>
+
+	    <div class="user-dropdown" id="userDropdown">
+	        <input type="text" id="userNameInput" placeholder="Nome do funcionário" />
+	        <button type="button" onclick="handleUserSelection()">Entrar</button>
+	    </div>
+
+	</div>
 </header>
 
 <!-- ================= LAYOUT PRINCIPAL ================= -->

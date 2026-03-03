@@ -12,6 +12,7 @@ body {
 }
 
 /* ================= HEADER ================= */
+/* ================= HEADER ================= */
 .header {
     width: 100%;
     background: linear-gradient(
@@ -28,6 +29,11 @@ body {
     z-index: 10;
 }
 
+/* ================= TEXTO DO HEADER ================= */
+.header-text {
+    max-width: 70%;
+}
+
 .header h1 {
     font-size: 2.6rem;
 }
@@ -37,6 +43,112 @@ body {
     opacity: 0.85;
 }
 
+/* ================= USER CONTAINER ================= */
+.user-container {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* nome logado */ 
+
+.logged-user-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* CARIMBO */
+
+.task-user {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* BOTÃO CIRCULAR DO USUÁRIO */
+.user-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.25s ease;
+    user-select: none;
+}
+
+.user-icon:hover {
+    background-color: rgba(255,255,255,0.35);
+    transform: scale(1.05);
+}
+
+/* DROPDOWN LATERAL */
+.user-dropdown {
+    position: absolute;
+    top: 50%;
+    right: 55px;
+    transform: translateY(-50%) translateX(20px);
+    
+    background-color: #009889;
+    padding: 14px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 230px;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* ATIVO COM ANIMAÇÃO */
+.user-dropdown.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* INPUT */
+.user-dropdown input {
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: none;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+/* BOTÃO */
+.user-dropdown button {
+    padding: 7px;
+    background-color: white;
+    color: #009889;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.user-dropdown button:hover {
+    opacity: 0.85;
+}
+/* USUÁRIO ATIVO (NOME EXIBIDO AO LADO DO ÍCONE) */
+#currentUserLabel {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
 /* ================= LAYOUT ================= */
 .page-container {
     display: flex;

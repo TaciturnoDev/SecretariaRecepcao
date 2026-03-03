@@ -1,11 +1,9 @@
 package com.math.taskmanager.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Table(name = "tasks")
@@ -14,47 +12,48 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task {
+
+/*
+ * Soft delete automático
+ */
+@SQLDelete(sql = "UPDATE tasks SET active = false WHERE id = ?")
+
+/*
+ * Ignora registros inativos automaticamente
+ */
+@Where(clause = "active = true")
+public class Task extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 3, max = 100)
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String title;
 
-    @Size(max = 255)
-    @Column(length = 255)
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus status;
-    
-    //CRIA COLUNA user_id no banco.
-    
+
+    /*
+     * Soft delete flag
+     */
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
     @PrePersist
-    public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public void prePersist() {
         if (this.status == null) {
             this.status = TaskStatus.PENDING;
         }
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        if (this.active == null) {
+            this.active = true;
+        }
     }
 }

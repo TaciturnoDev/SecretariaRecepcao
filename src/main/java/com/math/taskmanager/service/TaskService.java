@@ -1,9 +1,8 @@
 package com.math.taskmanager.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.math.taskmanager.dto.TaskRequestDTO;
@@ -15,8 +14,6 @@ import com.math.taskmanager.exception.ResourceNotFoundException;
 import com.math.taskmanager.repository.TaskRepository;
 import com.math.taskmanager.repository.UserRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -24,117 +21,79 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    // ========= DTO MAPPER =========
-    private TaskResponseDTO toDTO(Task task) {
-        return new TaskResponseDTO(
-                task.getId(),
-                task.getTitle(),
-                task.getDescription(),
-                task.getStatus(),
-                task.getCreatedAt()
-        );
-    }
-
-    // ========= CREATE =========
+    /*
+     * Criar tarefa vinculada ao usuário
+     */
     public TaskResponseDTO create(TaskRequestDTO dto) {
 
         User user = userRepository.findById(dto.userId())
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Usuário não encontrado com ID: " + dto.userId()
-                        )
+                        new ResourceNotFoundException("Usuário não encontrado")
                 );
 
-        Task task = new Task();
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setStatus(dto.status());
-        task.setUser(user);
+        Task task = Task.builder()
+                .title(dto.title())
+                .description(dto.description())
+                .user(user)
+                .build();
 
-        return toDTO(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        return mapToResponse(saved);
     }
 
-    // ========= LIST ALL =========
-    public Page<TaskResponseDTO> findAll(int page, int size) {
+    /*
+     * Paginação + filtros combináveis
+     */
+    public Page<TaskResponseDTO> findAll(
+            Long userId,
+            TaskStatus status,
+            Pageable pageable
+    ) {
 
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
-        );
+        Page<Task> page;
 
-        return taskRepository.findAll(pageable)
-                .map(this::toDTO);
+        if (userId != null && status != null) {
+            page = taskRepository.findByUserIdAndStatus(userId, status, pageable);
+        } 
+        else if (userId != null) {
+            page = taskRepository.findByUserId(userId, pageable);
+        } 
+        else if (status != null) {
+            page = taskRepository.findByStatus(status, pageable);
+        } 
+        else {
+            page = taskRepository.findAll(pageable);
+        }
+
+        return page.map(this::mapToResponse);
     }
 
-    // ========= LIST BY USER =========
-    public Page<TaskResponseDTO> findByUserId(
-            Long userId, int page, int size) {
-
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
-        );
-
-        return taskRepository.findByUserId(userId, pageable)
-                .map(this::toDTO);
-    }
-
-    // ========= FIND BY ID =========
-    public TaskResponseDTO findById(Long id) {
-
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Task não encontrada com ID: " + id
-                        )
-                );
-
-        return toDTO(task);
-    }
-
-    // ========= UPDATE =========
-    public TaskResponseDTO update(Long id, TaskRequestDTO dto) {
-
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Task não encontrada com ID: " + id
-                        )
-                );
-
-        task.setTitle(dto.title());
-        task.setDescription(dto.description());
-        task.setStatus(dto.status());
-
-        return toDTO(taskRepository.save(task));
-    }
-
-    // ========= DELETE =========
+    /*ca
+     * Soft delete real
+     */
     public void delete(Long id) {
-
         Task task = taskRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Task não encontrada com ID: " + id
-                        )
+                        new ResourceNotFoundException("Tarefa não encontrada")
                 );
 
         taskRepository.delete(task);
     }
 
-    // ========= FIND BY STATUS =========
-    public Page<TaskResponseDTO> findByStatus(
-            TaskStatus status, int page, int size) {
-
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by("createdAt").descending()
+    /*
+     * Mapper entidade -> DTO
+     */
+    private TaskResponseDTO mapToResponse(Task task) {
+        return new TaskResponseDTO(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getCreatedAt(),
+                task.getUpdatedAt(),
+                task.getUser().getId(),
+                task.getUser().getName()
         );
-
-        return taskRepository.findByStatus(status, pageable)
-                .map(this::toDTO);
     }
 }
