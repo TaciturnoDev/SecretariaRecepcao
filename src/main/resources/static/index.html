@@ -9,9 +9,7 @@
 </head>
 <body>
 
-	
 <!-- ================= HEADER INSTITUCIONAL ================= -->
-
 <header class="header">
     <h1>Secretaria do Desenvolvimento Econômico</h1>
     <span>Sistema de Recepção e Atendimentos</span>
@@ -20,11 +18,9 @@
 <!-- ================= LAYOUT PRINCIPAL ================= -->
 <div class="page-container">
 
-	
     <!-- ================= ÁREA ÚTIL (ESQUERDA) ================= -->
     <main class="content">
 
-		
         <!-- ================= FORMULÁRIO ================= -->
         <div class="form-card">
             <h2>Nova Tarefa</h2>
@@ -41,32 +37,39 @@
             <button id="submitBtn" onclick="createTask()">Criar</button>
         </div>
 
-		<!-- ================= BUSCA E FILTRO ================= -->
-		<div class="task-filters">
+        <!-- ================= BUSCA E FILTRO ================= -->
+        <div class="task-filters">
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar por nome, descrição ou CPF"
+                oninput="aplicarFiltros()"
+            >
 
-		    <!-- Busca -->
-		    <input 
-		        type="text" 
-		        id="searchInput" 
-		        placeholder="Buscar por nome, descrição ou CPF"
-		        oninput="aplicarFiltros()"
-		    >
+            <select id="filterStatus" onchange="aplicarFiltros()">
+                <option value="ALL">Todos</option>
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em andamento</option>
+                <option value="COMPLETED">Concluída</option>
+            </select>
+        </div>
 
-		    <!-- Filtro por status -->
-		    <select id="filterStatus" onchange="aplicarFiltros()">
-		        <option value="ALL">Todos</option>
-		        <option value="PENDING">Pendente</option>
-		        <option value="IN_PROGRESS">Em andamento</option>
-		        <option value="COMPLETED">Concluída</option>
-		    </select>
+        <!-- =========== CARREGAR TAREFAS =============== -->
+        <div id="loading" style="display:none;" class="loading">
+            Carregando tarefas...
+        </div>
 
-		</div>
-		
         <!-- ================= LISTA DE TAREFAS ================= -->
-        <h2>Tarefas</h2>
+        <div class="tasks-header">
+            <h2>Tarefas</h2>
+            <div id="paginationTop" class="pagination inline"></div>
+        </div>
+
         <ul id="taskList"></ul>
 
-    </main>
+        <div id="paginationBottom" class="pagination"></div>
+
+    </main> <!-- ✅ FECHAMENTO CORRETO DO MAIN -->
 
     <!-- ================= BACKGROUND (DIREITA) ================= -->
     <aside class="background-image"></aside>
@@ -75,5 +78,6 @@
 
 <!-- ================= JS ================= -->
 <script src="app.js"></script>
+
 </body>
 </html>

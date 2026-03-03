@@ -1,115 +1,76 @@
-// ================= CONFIGURAÇÃO =================
-
-// URL base da API (Spring Boot)
-const API_URL = "http://localhost:8080/tasks";
-
-// Tradução dos status (backend → frontend)
-const STATUS_PT = {
-    PENDING: "Pendente",
-    IN_PROGRESS: "Em andamento",
-    COMPLETED: "Concluída"
-};
-
-// Classe CSS associada a cada status
-const STATUS_CLASS = {
-    PENDING: "status-pending",
-    IN_PROGRESS: "status-in-progress",
-    COMPLETED: "status-completed"
-};
-
-// Controle de edição
-// null = criar | id = editar
+let tasks = [];
+let filteredTasks = [];
+let currentPage = 1;
 let editingTaskId = null;
 
-// Lista global para filtros
-let todasAsTarefas = [];
+const ITEMS_PER_PAGE = 6;
 
+/* ================= CRIAR / EDITAR ================= */
+function createTask() {
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const status = document.getElementById("status").value;
 
-// ================= LISTAR TAREFAS =================
+    if (!title) return;
 
-function carregarTarefas() {
+    if (editingTaskId !== null) {
+        const task = tasks.find(t => t.id === editingTaskId);
+        task.title = title;
+        task.description = description;
+        task.status = status;
 
-    fetch(API_URL)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro ao buscar tarefas");
-            }
-            return response.json();
-        })
-        .then(data => {
-
-            if (!data || !Array.isArray(data.content)) {
-                renderizarTarefas([]);
-                return;
-            }
-
-            todasAsTarefas = data.content;
-            renderizarTarefas(todasAsTarefas);
-        })
-        .catch(error => {
-            console.error(error);
-            document.getElementById("taskList").innerHTML =
-                "<li>Erro ao carregar tarefas</li>";
+        editingTaskId = null;
+        document.getElementById("submitBtn").textContent = "Criar";
+    } else {
+        tasks.unshift({
+            id: Date.now(),
+            title,
+            description,
+            status
         });
-}
-
-
-// ================= FILTRO + BUSCA INTELIGENTE =================
-
-function aplicarFiltros() {
-
-    const termo = document
-        .getElementById("searchInput")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const termoNumerico = termo.replace(/\D/g, "");
-
-    const statusSelecionado =
-        document.getElementById("filterStatus").value;
-
-    const filtradas = todasAsTarefas.filter(task => {
-
-        const textoCompleto = `
-            ${task.title}
-            ${task.description}
-        `.toLowerCase();
-
-        const textoNumerico = textoCompleto.replace(/\D/g, "");
-
-        const bateTexto =
-            textoCompleto.includes(termo);
-
-        const bateCpf =
-            termoNumerico &&
-            textoNumerico.includes(termoNumerico);
-
-        const bateStatus =
-            statusSelecionado === "ALL" ||
-            task.status === statusSelecionado;
-
-        return (bateTexto || bateCpf) && bateStatus;
-    });
-
-    renderizarTarefas(filtradas);
-}
-
-
-// ================= RENDERIZAÇÃO =================
-
-function renderizarTarefas(tasks) {
-
-    const lista = document.getElementById("taskList");
-    lista.innerHTML = "";
-
-    if (!tasks || tasks.length === 0) {
-        lista.innerHTML = "<li>Nenhuma tarefa encontrada</li>";
-        return;
     }
 
-    tasks.forEach(task => {
+    document.getElementById("title").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("status").value = "PENDING";
 
+    currentPage = 1;
+    aplicarFiltros();
+}
+
+/* ================= FILTROS ================= */
+function aplicarFiltros() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const statusFilter = document.getElementById("filterStatus").value;
+
+    filteredTasks = tasks.filter(task => {
+        const texto = `${task.title} ${task.description}`.toLowerCase();
+        const matchTexto = texto.includes(search);
+        const matchStatus =
+            statusFilter === "ALL" || task.status === statusFilter;
+
+        return matchTexto && matchStatus;
+    });
+
+    currentPage = 1;
+    render();
+}
+
+/* ================= RENDER ================= */
+function render() {
+    renderTasks();
+    renderPagination();
+}
+
+/* ================= TAREFAS ================= */
+function renderTasks() {
+    const list = document.getElementById("taskList");
+    list.innerHTML = "";
+
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+
+    filteredTasks.slice(start, end).forEach(task => {
         const li = document.createElement("li");
         li.className = "task-card";
 
@@ -119,138 +80,92 @@ function renderizarTarefas(tasks) {
                 <p>${task.description}</p>
             </div>
 
-            <span class="status-badge ${STATUS_CLASS[task.status]}">
-                ${STATUS_PT[task.status]}
-            </span>
+            <div class="status-badge ${getStatusClass(task.status)}">
+                ${getStatusLabel(task.status)}
+            </div>
 
             <div class="task-actions">
-                <button onclick='editTask(${JSON.stringify(task)})'>✏️</button>
-                <button onclick='deleteTask(${task.id})'>❌</button>
+                <button title="Editar" onclick="editTask(${task.id})">✏️</button>
+                <button title="Excluir" onclick="deleteTask(${task.id})">❌</button>
             </div>
         `;
 
-        lista.appendChild(li);
+        list.appendChild(li);
     });
 }
 
-
-// ================= CRIAR OU ATUALIZAR =================
-
-function createTask() {
-
-    const title = document.getElementById("title").value.trim();
-    const description = document.getElementById("description").value.trim();
-    const status = document.getElementById("status").value;
-
-    if (!title || !description) {
-        alert("Preencha todos os campos");
-        return;
-    }
-
-    const task = {
-        title,
-        description,
-        status,
-        userId: 1
-    };
-
-    // ================= UPDATE =================
-    if (editingTaskId !== null) {
-
-        fetch(`${API_URL}/${editingTaskId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(task)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Erro ao atualizar tarefa");
-                }
-                return response.json();
-            })
-            .then(() => {
-                resetForm();
-                carregarTarefas();
-            })
-            .catch(error => {
-                console.error(error);
-                alert("Erro ao atualizar tarefa");
-            });
-
-        return;
-    }
-
-    // ================= CREATE =================
-    fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(task)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro ao criar tarefa");
-            }
-            return response.json();
-        })
-        .then(() => {
-            resetForm();
-            carregarTarefas();
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Erro ao criar tarefa");
-        });
-}
-
-
-// ================= EDITAR =================
-
-function editTask(task) {
+/* ================= EDIT ================= */
+function editTask(id) {
+    const task = tasks.find(t => t.id === id);
 
     document.getElementById("title").value = task.title;
     document.getElementById("description").value = task.description;
     document.getElementById("status").value = task.status;
 
-    editingTaskId = task.id;
-    document.getElementById("submitBtn").textContent = "Atualizar";
+    editingTaskId = id;
+    document.getElementById("submitBtn").textContent = "Salvar";
 }
 
-
-// ================= EXCLUIR =================
-
+/* ================= DELETE ================= */
 function deleteTask(id) {
+    const confirmacao = confirm("Deseja excluir esta tarefa?");
 
-    if (!confirm("Tem certeza que deseja excluir esta tarefa?")) {
-        return;
+    if (!confirmacao) return;
+
+    tasks = tasks.filter(task => task.id !== id);
+
+    if ((currentPage - 1) * ITEMS_PER_PAGE >= tasks.length) {
+        currentPage = Math.max(1, currentPage - 1);
     }
 
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Erro ao excluir tarefa");
-            }
-            carregarTarefas();
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Erro ao excluir tarefa");
-        });
+    aplicarFiltros();
 }
 
+/* ================= PAGINAÇÃO ================= */
+function renderPagination() {
+    const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE);
 
-// ================= RESET =================
+    const top = document.getElementById("paginationTop");
+    const bottom = document.getElementById("paginationBottom");
 
-function resetForm() {
+    [top, bottom].forEach(container => {
+        container.innerHTML = "";
+        if (totalPages <= 1) return;
 
-    document.getElementById("title").value = "";
-    document.getElementById("description").value = "";
-    document.getElementById("status").value = "PENDING";
+        const prev = document.createElement("button");
+        prev.textContent = "‹";
+        prev.disabled = currentPage === 1;
+        prev.onclick = () => { currentPage--; render(); };
+        container.appendChild(prev);
 
-    editingTaskId = null;
-    document.getElementById("submitBtn").textContent = "Criar";
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            if (i === currentPage) btn.classList.add("active");
+            btn.onclick = () => { currentPage = i; render(); };
+            container.appendChild(btn);
+        }
+
+        const next = document.createElement("button");
+        next.textContent = "›";
+        next.disabled = currentPage === totalPages;
+        next.onclick = () => { currentPage++; render(); };
+        container.appendChild(next);
+    });
 }
 
+/* ================= STATUS ================= */
+function getStatusClass(status) {
+    if (status === "PENDING") return "status-pending";
+    if (status === "IN_PROGRESS") return "status-in-progress";
+    return "status-completed";
+}
 
-// ================= AUTO LOAD =================
+function getStatusLabel(status) {
+    if (status === "PENDING") return "Pendente";
+    if (status === "IN_PROGRESS") return "Em andamento";
+    return "Concluída";
+}
 
-document.addEventListener("DOMContentLoaded", carregarTarefas);
+/* ================= INIT ================= */
+aplicarFiltros();

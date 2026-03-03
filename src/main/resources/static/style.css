@@ -1,5 +1,4 @@
 /* ================= RESET ================= */
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -12,32 +11,39 @@ body {
     color: #414042;
 }
 
-/* ================= LAYOUT PRINCIPAL ================= */
-
-.page-container {
-    display: flex;
-    height: 100vh;
-}
-
 /* ================= HEADER ================= */
-
-header {
-    background-color: #F15A22;
-    color: rgb(255, 255, 255);
-    padding: 20px 40px;
+.header {
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #F15A22 0%,
+        #F15A22 80%,
+        #009889 80%,
+        #009889 100%
+    );
+    color: #ffffff;
+    padding: 24px 40px;
+    box-shadow: 0 16px 18px rgba(0,0,0,.12);
+    position: relative;
+    z-index: 10;
 }
 
-header h1 {
+.header h1 {
     font-size: 2.6rem;
 }
 
-header p {
-    font-size: 1.8rem;
+.header span {
+    font-size: 1.1rem;
     opacity: 0.85;
 }
 
-/* ================= ÁREA ÚTIL ================= */
+/* ================= LAYOUT ================= */
+.page-container {
+    display: flex;
+    height: calc(100vh - 96px);
+}
 
+/* ================= CONTEÚDO ================= */
 .content {
     width: 60%;
     padding: 32px 40px;
@@ -46,7 +52,6 @@ header p {
 }
 
 /* ================= BACKGROUND DIREITO ================= */
-
 .background-image {
     width: 40%;
     background-image: url("imagens/DESENVOLVIMENTO ECONOMICO.png");
@@ -54,28 +59,24 @@ header p {
     background-position: center;
     background-size: contain;
     background-color: #FFE6CB;
-    opacity: 0.80;
+    opacity: 0.8;
 }
 
-/* ================= FORMULÁRIO ================= */
-
-section {
-
-    margin-bottom: 32px;
-	
+/* ================= FORM ================= */
+.form-card {
+    margin-bottom: 24px;
 }
 
-section h2 {
-	
+.form-card h2 {
     margin-bottom: 16px;
-
 }
 
 input, select {
-    padding: 8px;
+    padding: 10px;
     margin-right: 8px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #d1d5db;
+    font-size: 0.95rem;
 }
 
 input:focus, select:focus {
@@ -87,8 +88,8 @@ input:focus, select:focus {
     background-color: #F15A22;
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
+    padding: 10px 18px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
 }
@@ -97,71 +98,78 @@ input:focus, select:focus {
     background-color: #d94f1d;
 }
 
-/* ================= NAV DE FILTRO (ABAS) ================= */
-
-.task-tabs {
+/* ================= FILTROS ================= */
+.task-filters {
     display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
-    border-bottom: 2px solid #e5e7eb;
+    gap: 12px;
+    margin: 16px 0 24px 0;
 }
 
-.task-tab {
-    padding: 8px 16px;
-    cursor: pointer;
+.task-filters input {
+    flex: 1;
+}
+
+.task-filters select {
     font-weight: 600;
-    color: #6b7280;
-    border-bottom: 3px solid transparent;
+    cursor: pointer;
 }
 
-.task-tab.active {
-    color: #F15A22;
-    border-bottom: 0px solid #F15A22;
+/* ================= HEADER TAREFAS ================= */
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
-/* ================= LISTA DE TAREFAS ================= */
-
+/* ================= LISTA ================= */
 #taskList {
     list-style: none;
-	padding: 16px;
+    padding: 0;
 }
 
-/* ================= CARD DE TAREFA ================= */
-
+/* ================= CARD ================= */
 .task-card {
+    display: grid;
+    grid-template-columns: 1fr 120px 80px;
+    align-items: center;
+    gap: 12px;
+
     background-color: #ffffff;
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 12px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    border-left: 6px solid #F15A22;
+    border-left: 6px solid #009889;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* ================= INFO DA TAREFA ================= */
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
 
+/* ================= INFO ================= */
 .task-info strong {
     font-size: 1.05rem;
-    color: #414042;
 }
 
 .task-info p {
-    margin-top: 4px;
     font-size: 0.9rem;
     color: #6b7280;
+    margin-top: 4px;
 }
 
 /* ================= STATUS ================= */
-
 .status-badge {
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
+    text-align: center;
+    justify-self: center;
     white-space: nowrap;
 }
 
@@ -181,25 +189,66 @@ input:focus, select:focus {
 }
 
 /* ================= AÇÕES ================= */
+.task-actions {
+    display: flex;
+    justify-content: flex-end;
+}
 
 .task-actions button {
     border: none;
-    background-color: transparent;
+    background: none;
     cursor: pointer;
     font-size: 1.1rem;
     margin-left: 8px;
+    transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .task-actions button:hover {
-    transform: scale(1.15);
+    transform: scale(1.2);
+    opacity: 0.85;
+}
+
+/* ================= PAGINAÇÃO ================= */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.pagination.inline::before {
+    content: "Páginas:";
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.pagination button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.pagination button:hover {
+    color: #F15A22;
+}
+
+.pagination button.active {
+    color: #F15A22;
+    border-bottom: 2px solid #F15A22;
+}
+
+.pagination button:disabled {
+    opacity: 0.3;
+    cursor: default;
 }
 
 /* ================= RESPONSIVO ================= */
-
 @media (max-width: 900px) {
-
     .page-container {
         flex-direction: column;
+        height: auto;
     }
 
     .content {
@@ -211,36 +260,6 @@ input:focus, select:focus {
     }
 }
 
-/* ================= BUSCA E FILTRO ================= */
-
-.task-filters {
-    display: flex;
-    gap: 12px;
-    margin: 16px 0 24px 0;
-}
-
-.task-filters input {
-    flex: 1;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 0.95rem;
-}
-
-.task-filters input:focus {
-    outline: none;
-    border-color: #F15A22;
-}
-
-.task-filters select {
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-/* Mobile */
 @media (max-width: 600px) {
     .task-filters {
         flex-direction: column;
