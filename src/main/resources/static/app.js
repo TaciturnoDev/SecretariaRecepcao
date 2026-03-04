@@ -37,11 +37,13 @@ function createTask() {
             title,
             description,
             status,
-            user: currentUser.name
+            user: currentUser.name,
+            createdAt: new Date().toISOString()
         });
     }
 
     limparFormulario();
+    updateUserFilterOptions();
     aplicarFiltros();
 }
 
@@ -54,19 +56,15 @@ function limparFormulario() {
 
 /* ================= FILTROS ================= */
 function aplicarFiltros() {
-    const searchInput = document.getElementById("searchInput");
-    const filterStatusSelect = document.getElementById("filterStatus");
 
-    const search = searchInput ? searchInput.value.toLowerCase() : "";
-    const statusFilter = filterStatusSelect ? filterStatusSelect.value : "ALL";
+    const filterUserSelect = document.getElementById("filterUser");
+    const userFilter = filterUserSelect ? filterUserSelect.value : "ALL";
 
     filteredTasks = tasks.filter(task => {
-        const texto = `${task.title} ${task.description}`.toLowerCase();
-        const matchTexto = texto.includes(search);
-        const matchStatus =
-            statusFilter === "ALL" || task.status === statusFilter;
+        const matchUser =
+            userFilter === "ALL" || task.user === userFilter;
 
-        return matchTexto && matchStatus;
+        return matchUser;
     });
 
     const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE);
@@ -85,6 +83,7 @@ function render() {
 
 /* ================= TAREFAS ================= */
 function renderTasks() {
+
     const list = document.getElementById("taskList");
     if (!list) return;
 
@@ -99,6 +98,7 @@ function renderTasks() {
     const end = start + ITEMS_PER_PAGE;
 
     filteredTasks.slice(start, end).forEach(task => {
+
         const li = document.createElement("li");
         li.className = "task-card";
 
@@ -106,9 +106,16 @@ function renderTasks() {
             <div class="task-info">
                 <strong>${task.title}</strong>
                 <p>${task.description}</p>
-                <small class="task-user">
-                    Criado por: ${task.user || "—"}
-                </small>
+
+                <div class="task-meta">
+                    <div class="task-user-badge">
+                        👤 ${task.user ? task.user.toUpperCase() : "—"}
+                    </div>
+
+                    <div class="task-date">
+                        📅 ${task.createdAt ? formatDate(task.createdAt) : ""}
+                    </div>
+                </div>
             </div>
 
             <div class="status-badge ${getStatusClass(task.status)}">
@@ -116,8 +123,8 @@ function renderTasks() {
             </div>
 
             <div class="task-actions">
-                <button title="Editar" onclick="editTask(${task.id})">✏️</button>
-                <button title="Excluir" onclick="deleteTask(${task.id})">❌</button>
+                <button onclick="editTask(${task.id})">✏️</button>
+                <button onclick="deleteTask(${task.id})">❌</button>
             </div>
         `;
 
@@ -140,53 +147,48 @@ function editTask(id) {
 
 /* ================= DELETE ================= */
 function deleteTask(id) {
-    const confirmacao = confirm("Deseja excluir esta tarefa?");
-    if (!confirmacao) return;
+    if (!confirm("Deseja excluir esta tarefa?")) return;
 
     tasks = tasks.filter(task => task.id !== id);
+
+    updateUserFilterOptions();
     aplicarFiltros();
 }
 
 /* ================= PAGINAÇÃO ================= */
 function renderPagination() {
+
     const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE);
 
     const top = document.getElementById("paginationTop");
     const bottom = document.getElementById("paginationBottom");
 
     [top, bottom].forEach(container => {
+
         if (!container) return;
 
         container.innerHTML = "";
+
         if (totalPages <= 1) return;
 
         const prev = document.createElement("button");
         prev.textContent = "‹";
         prev.disabled = currentPage === 1;
-        prev.onclick = () => {
-            currentPage--;
-            render();
-        };
+        prev.onclick = () => { currentPage--; render(); };
         container.appendChild(prev);
 
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement("button");
             btn.textContent = i;
             if (i === currentPage) btn.classList.add("active");
-            btn.onclick = () => {
-                currentPage = i;
-                render();
-            };
+            btn.onclick = () => { currentPage = i; render(); };
             container.appendChild(btn);
         }
 
         const next = document.createElement("button");
         next.textContent = "›";
         next.disabled = currentPage === totalPages;
-        next.onclick = () => {
-            currentPage++;
-            render();
-        };
+        next.onclick = () => { currentPage++; render(); };
         container.appendChild(next);
     });
 }
@@ -205,34 +207,39 @@ function getStatusLabel(status) {
 }
 
 /* ================= USER ================= */
+function initUserSystem() {
 
-function toggleUserBox() {
-    const box = document.getElementById("userDropdown");
-    if (!box) return;
-    box.classList.toggle("active");
+    const userIcon = document.getElementById("userIcon");
+    const dropdown = document.getElementById("userDropdown");
+    const enterBtn = document.getElementById("enterUserBtn");
+
+    if (!userIcon || !dropdown || !enterBtn) return;
+
+    userIcon.addEventListener("click", function (event) {
+        event.stopPropagation();
+        dropdown.classList.toggle("active");
+    });
+
+    enterBtn.addEventListener("click", function () {
+
+        const input = document.getElementById("userNameInput");
+        const name = input.value.trim();
+
+        if (!name) {
+            alert("Digite o nome do usuário.");
+            return;
+        }
+
+        currentUser = { name };
+
+        updateUserDisplay();
+        dropdown.classList.remove("active");
+        input.value = "";
+    });
 }
 
-function handleUserSelection() {
-    const input = document.getElementById("userNameInput");
-    if (!input) return;
+function updateUserDisplay() {
 
-    const name = input.value.trim();
-    if (!name) {
-        alert("Digite o nome do usuário.");
-        return;
-    }
-
-    currentUser = { name };
-
-    updateUserIcon();
-    document.getElementById("userDropdown").classList.remove("active");
-
-    input.value = "";
-
-    alert("Usuário selecionado: " + currentUser.name);
-}
-
-function updateUserIcon() {
     const icon = document.getElementById("userIcon");
     const nameDisplay = document.getElementById("loggedUserName");
 
@@ -251,29 +258,59 @@ function updateUserIcon() {
             : names[0][0];
 
     icon.innerText = initials.toUpperCase();
-    nameDisplay.innerText = currentUser.name + " (usuário logado)";
+    nameDisplay.innerText = currentUser.name;
 }
 
-/* ===== FECHAR DROPDOWN CORRETAMENTE ===== */
-document.addEventListener("click", function (event) {
-    const container = document.querySelector(".user-container");
-    const dropdown = document.getElementById("userDropdown");
+/* ================= DATA ================= */
+function formatDate(dateString) {
 
-    if (!container || !dropdown) return;
+    const date = new Date(dateString);
+    const today = new Date();
 
-    if (!container.contains(event.target)) {
-        dropdown.classList.remove("active");
-    }
-});
+    const isToday =
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
 
-/* Impede fechar ao clicar dentro */
-document.addEventListener("DOMContentLoaded", function () {
-    const dropdown = document.getElementById("userDropdown");
-    if (dropdown) {
-        dropdown.addEventListener("click", function (event) {
-            event.stopPropagation();
+    const formatted = date.toLocaleDateString("pt-BR");
+
+    return isToday
+        ? `${formatted} (Criada hoje)`
+        : formatted;
+}
+
+/* ================= FILTRO USER ================= */
+function updateUserFilterOptions() {
+
+    const select = document.getElementById("filterUser");
+    if (!select) return;
+
+    const users = [...new Set(tasks.map(t => t.user))];
+
+    select.innerHTML = `<option value="ALL">Todos os usuários</option>`;
+
+    users.forEach(user => {
+        if (!user) return;
+        const option = document.createElement("option");
+        option.value = user;
+        option.textContent = user;
+        select.appendChild(option);
+    });
+}
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+    initUserSystem();
+    updateUserFilterOptions();
+    aplicarFiltros();
+
+    const filterUser = document.getElementById("filterUser");
+    if (filterUser) {
+        filterUser.addEventListener("change", () => {
+            currentPage = 1;
+            aplicarFiltros();
         });
     }
 
-    aplicarFiltros();
 });

@@ -45,6 +45,48 @@ body {
 
 /* ================= USER CONTAINER ================= */
 .user-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logged-user-name {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.user-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #ffffff22;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 50%;
+    right: 60px; /* abre para esquerda */
+    transform: translateY(-50%);
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.user-dropdown.active {
+    display: flex;
+}
+.user-container {
     position: absolute;
     right: 10px;
     top: 50%;
@@ -63,7 +105,33 @@ body {
     white-space: nowrap;
 }
 
+/* DATA CRIAÇAO */
+
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.task-date {
+    font-size: 0.75rem;
+    color: #666;
+}
+
 /* CARIMBO */
+
+.task-user-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    background-color: #e6f0ff;
+    color: #1a4fb5;
+    letter-spacing: 0.5px;
+}
 
 .task-user {
     display: block;
@@ -88,7 +156,7 @@ body {
 }
 
 .user-icon:hover {
-    background-color: rgba(255,255,255,0.35);
+    background-color:#F15A22;
     transform: scale(1.05);
 }
 
@@ -99,7 +167,7 @@ body {
     right: 55px;
     transform: translateY(-50%) translateX(20px);
     
-    background-color: #009889;
+    background-color:#F15A22;
     padding: 14px;
     border-radius: 10px;
     display: flex;
@@ -226,6 +294,9 @@ input:focus, select:focus {
     cursor: pointer;
 }
 
+.filterUser {
+	padding: lef 20px;
+}
 /* ================= HEADER TAREFAS ================= */
 .tasks-header {
     display: flex;

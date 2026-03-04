@@ -18,13 +18,13 @@
 
 	    <span id="loggedUserName" class="logged-user-name"></span>
 
-	    <div class="user-icon" id="userIcon" onclick="toggleUserBox()">
+	    <div class="user-icon" id="userIcon">
 	        👤
 	    </div>
 
 	    <div class="user-dropdown" id="userDropdown">
 	        <input type="text" id="userNameInput" placeholder="Nome do funcionário" />
-	        <button type="button" onclick="handleUserSelection()">Entrar</button>
+	        <button type="button" id="enterUserBtn">Entrar</button>
 	    </div>
 
 	</div>
@@ -68,6 +68,10 @@
                 <option value="COMPLETED">Concluída</option>
             </select>
         </div>
+		
+		<select id="filterUser">
+		    <option value="ALL">Todos os usuários</option>
+		</select>
 
         <!-- =========== CARREGAR TAREFAS =============== -->
         <div id="loading" style="display:none;" class="loading">
