@@ -12,12 +12,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.math.taskmanager.dto.TaskRequestDTO;
 import com.math.taskmanager.dto.TaskResponseDTO;
 import com.math.taskmanager.entity.Task;
 import com.math.taskmanager.entity.TaskStatus;
 import com.math.taskmanager.entity.User;
-import com.math.taskmanager.exception.ResourceNotFoundException;
 import com.math.taskmanager.repository.TaskRepository;
 import com.math.taskmanager.repository.UserRepository;
 
@@ -37,12 +40,23 @@ class TaskServiceTest {
     void deveCriarTarefaComSucesso() {
 
         // =========================
+        // MOCK USUÁRIO LOGADO
+        // =========================
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("admin");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        // =========================
         // ARRANGE
         // =========================
-
         User user = new User();
         user.setId(1L);
         user.setName("Marcos");
+        user.setLogin("admin");
 
         Task task = new Task();
         task.setId(1L);
@@ -54,11 +68,10 @@ class TaskServiceTest {
 
         TaskRequestDTO dto = new TaskRequestDTO(
                 "Teste",
-                "Descrição",
-                1L
+                "Descrição"
         );
 
-        when(userRepository.findById(1L))
+        when(userRepository.findByLogin("admin"))
                 .thenReturn(Optional.of(user));
 
         when(taskRepository.save(any(Task.class)))
@@ -67,13 +80,11 @@ class TaskServiceTest {
         // =========================
         // ACT
         // =========================
-
         TaskResponseDTO response = taskService.create(dto);
 
         // =========================
         // ASSERT
         // =========================
-
         assertNotNull(response);
         assertEquals("Teste", response.title());
         assertEquals(TaskStatus.PENDING, response.status());
@@ -85,24 +96,32 @@ class TaskServiceTest {
     void deveLancarErroQuandoUsuarioNaoExiste() {
 
         // =========================
+        // MOCK USUÁRIO LOGADO
+        // =========================
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("admin");
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        // =========================
         // ARRANGE
         // =========================
-
         TaskRequestDTO dto = new TaskRequestDTO(
                 "Teste",
-                "Descrição",
-                99L
+                "Descrição"
         );
 
-        when(userRepository.findById(99L))
+        when(userRepository.findByLogin("admin"))
                 .thenReturn(Optional.empty());
 
         // =========================
         // ACT + ASSERT
         // =========================
-
         assertThrows(
-                ResourceNotFoundException.class,
+                RuntimeException.class, // 🔥 ajustado ao seu service
                 () -> taskService.create(dto)
         );
     }

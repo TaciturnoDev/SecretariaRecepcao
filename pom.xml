@@ -37,6 +37,19 @@
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+<!--           Security        -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<!-- login tela-->
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+
     <!-- Spring Data JPA -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -95,11 +108,12 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</path>
-					</annotationProcessorPaths>
+    <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>1.18.30</version>
+    </path>
+</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>

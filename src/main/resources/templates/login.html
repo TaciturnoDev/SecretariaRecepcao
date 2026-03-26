@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Login</h2>
+
+    <form method="post" action="/login">
+        <input type="text" name="username" placeholder="Login" required />
+        <input type="password" name="password" placeholder="Senha" required />
+        <button type="submit">Entrar</button>
+    </form>
+
+    <span class="link" onclick="abrirPrimeiroAcesso()">Primeiro acesso</span>
+
+    <div id="primeiro-acesso" style="display:none;">
+        <h3>Criar conta</h3>
+
+        <input type="text" id="cpf" placeholder="CPF" />
+        <input type="text" id="nome" placeholder="Nome" />
+        <input type="text" id="login" placeholder="Login" />
+        <input type="password" id="senha" placeholder="Senha" />
+
+        <button onclick="criarConta()">Criar</button>
+    </div>
+
+</div>
+
+<script>
+function abrirPrimeiroAcesso() {
+    document.getElementById("primeiro-acesso").style.display = "block";
+}
+
+async function criarConta() {
+    const response = await fetch("/users", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            cpf: document.getElementById("cpf").value,
+            name: document.getElementById("nome").value,
+            login: document.getElementById("login").value,
+            password: document.getElementById("senha").value
+        })
+    });
+
+    if (response.ok) {
+        alert("Conta criada!");
+        location.reload();
+    } else {
+        alert("Erro ao criar conta");
+    }
+}
+</script>
+
+</body>
+</html>

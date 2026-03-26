@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.math.taskmanager.dto.UserResponseDTO; // 🔥 IMPORT IMPORTANTE
 import com.math.taskmanager.entity.User;
 import com.math.taskmanager.service.UserService;
 
@@ -31,25 +32,29 @@ public class UserController {
      * Listar todos
      */
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<UserResponseDTO>> findAll() {
+        List<UserResponseDTO> users = userService.findAll()
+                .stream()
+                .map(UserResponseDTO::new)
+                .toList();
+
+        return ResponseEntity.ok(users);
     }
 
     /*
      * Buscar por ID
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.findById(id));
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(new UserResponseDTO(userService.findById(id)));
     }
 
     /*
      * Buscar por nome (somente ativo)
-     * Simula login por nome.
      */
     @GetMapping("/profile/{name}")
-    public ResponseEntity<User> findByName(@PathVariable String name) {
-        return ResponseEntity.ok(userService.findActiveByName(name));
+    public ResponseEntity<UserResponseDTO> findByName(@PathVariable String name) {
+        return ResponseEntity.ok(new UserResponseDTO(userService.findActiveByName(name)));
     }
 
     /*

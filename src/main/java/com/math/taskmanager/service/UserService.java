@@ -19,7 +19,7 @@ public class UserService {
 
     /*
      * Criação de funcionário.
-     * Valida se CPF já existe.
+     * Valida se CPF ou login já existem.
      */
     public User create(User user) {
 
@@ -27,6 +27,10 @@ public class UserService {
                 .ifPresent(existing -> {
                     throw new BusinessRuleException("CPF já cadastrado no sistema.");
                 });
+
+        if (userRepository.existsByLogin(user.getLogin())) {
+            throw new BusinessRuleException("Login já está em uso.");
+        }
 
         user.setActive(true);
         return userRepository.save(user);
@@ -40,7 +44,7 @@ public class UserService {
     }
 
     /*
-     * Busca por ID.
+     * Busca usuário por ID.
      */
     public User findById(Long id) {
         return userRepository.findById(id)
@@ -51,13 +55,30 @@ public class UserService {
 
     /*
      * Busca por nome (somente ativos).
-     * Esse método simula seu "perfil automático".
+     * Utilizado no sistema atual de tarefas.
      */
     public User findActiveByName(String name) {
         return userRepository.findByNameAndActiveTrue(name)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Funcionário ativo não encontrado com nome: " + name)
                 );
+    }
+
+    /*
+     * Busca usuário pelo login (utilizado para autenticação).
+     */
+    public User findByLogin(String login) {
+        return userRepository.findByLogin(login)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Usuário não encontrado com login: " + login)
+                );
+    }
+
+    /*
+     * Verifica se login já existe.
+     */
+    public boolean loginExists(String login) {
+        return userRepository.existsByLogin(login);
     }
 
     /*
@@ -76,4 +97,5 @@ public class UserService {
         User user = findById(id);
         userRepository.delete(user);
     }
+
 }

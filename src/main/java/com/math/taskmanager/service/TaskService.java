@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.math.taskmanager.dto.TaskRequestDTO;
 import com.math.taskmanager.dto.TaskResponseDTO;
@@ -22,24 +23,28 @@ public class TaskService {
     private final UserRepository userRepository;
 
     /*
-     * Criar tarefa vinculada ao usuário
+     * Criar tarefa vinculada ao usuário logado
      */
     public TaskResponseDTO create(TaskRequestDTO dto) {
 
-        User user = userRepository.findById(dto.userId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Usuário não encontrado")
-                );
+        // 🔥 PEGA USUÁRIO LOGADO
+        String login = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepository.findByLogin(login)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         Task task = Task.builder()
                 .title(dto.title())
                 .description(dto.description())
+                .status(TaskStatus.PENDING)
                 .user(user)
                 .build();
 
-        Task saved = taskRepository.save(task);
+        task = taskRepository.save(task);
 
-        return mapToResponse(saved);
+        return mapToResponse(task); // 🔥 CORRIGIDO
     }
 
     /*
@@ -69,8 +74,8 @@ public class TaskService {
         return page.map(this::mapToResponse);
     }
 
-    /*ca
-     * Soft delete real
+    /*
+     * Soft delete
      */
     public void delete(Long id) {
         Task task = taskRepository.findById(id)

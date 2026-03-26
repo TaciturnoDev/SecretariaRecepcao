@@ -1,41 +1,45 @@
 package com.math.taskmanager.config;
 
-import com.math.taskmanager.entity.User;
-import com.math.taskmanager.repository.UserRepository;
+import java.time.LocalDateTime;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- * Classe responsável por inserir dados iniciais no banco.
- * Executa automaticamente quando a aplicação sobe.
- * Ideal apenas para ambiente de desenvolvimento.
- */
+import com.math.taskmanager.entity.Role;
+import com.math.taskmanager.entity.User;
+import com.math.taskmanager.repository.UserRepository;
+
 @Configuration
 public class DataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(UserRepository userRepository) {
+    public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
 
-        /*
-         * Evita recriar dados toda vez que a aplicação reinicia.
-         */
         if (userRepository.count() == 0) {
 
-            User user = User.builder()
-                    .name("Marcos")
-                    .cpf("564.321.653-58")
-                    .active(true)
-                    .build();
+            User user = new User();
+            user.setName("Administrador");
+            user.setLogin("admin");
+            user.setCpf("00000000000");
+            user.setPassword(passwordEncoder.encode("admin123"));
+            user.setRole(Role.SUPER_ADMIN);
+            user.setActive(true);
+            user.setCreatedAt(LocalDateTime.now());
 
             userRepository.save(user);
 
-            System.out.println("✔ Funcionário padrão criado com ID = " + user.getId());
+            System.out.println("✅ Usuário inicial criado!");
+            System.out.println("Login: admin");
+            System.out.println("Senha: admin123");
         }
     }
 }

@@ -1,43 +1,82 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Recepção - SDE</title>
 
-    <!-- CSS principal -->
+    <!-- ================= CSS ================= -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<!-- ================= HEADER INSTITUCIONAL ================= -->
-<header class="header">
-    <h1>Secretaria do Desenvolvimento Econômico</h1>
-    <span>Sistema de Recepção e Atendimentos</span>
-	
-	<div class="user-container">
+<!-- ===================================================== -->
+<!-- 🔶 BANNER / TOPO -->
+<!-- ===================================================== -->
+<div class="banner">
 
-	    <span id="loggedUserName" class="logged-user-name"></span>
+    <!-- LOGO -->
+    <img src="imagens/desenvolvimento_economico.png" alt="Logo">
 
-	    <div class="user-icon" id="userIcon">
-	        👤
-	    </div>
+    <!-- 🔷 USUÁRIO LOGADO -->
+    <div class="user-container">
+        <span id="loggedUserName" class="logged-user-name"></span>
 
-	    <div class="user-dropdown" id="userDropdown">
-	        <input type="text" id="userNameInput" placeholder="Nome do funcionário" />
-	        <button type="button" id="enterUserBtn">Entrar</button>
-	    </div>
+        <div class="user-icon" id="userIcon">
+            👤
+        </div>
+    </div>
 
-	</div>
-</header>
+</div>
 
-<!-- ================= LAYOUT PRINCIPAL ================= -->
+
+<!-- ===================================================== -->
+<!-- 🔷 SIDEBAR (MENU LATERAL) -->
+<!-- ===================================================== -->
+<div id="sidebar" class="sidebar">
+
+    <!-- BOTÃO EXPANDIR / MINIMIZAR -->
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        ☰
+        <span class="text">Menu</span>
+    </button>
+
+    <div class="sidebar-content">
+
+        <!-- HEADER -->
+        <div class="sidebar-header">
+            <h3>Setores</h3>
+            <button onclick="abrirCriarSetor()">＋</button>
+        </div>
+
+        <!-- 🔍 BUSCA DE SETOR -->
+        <input 
+            type="text" 
+            id="searchSetor" 
+            placeholder="Buscar setor..."
+            oninput="filtrarSetores()"
+        />
+
+        <!-- 📁 LISTA DE SETORES -->
+        <ul id="lista-setores"></ul>
+
+    </div>
+</div>
+
+
+<!-- ===================================================== -->
+<!-- 🧱 LAYOUT PRINCIPAL -->
+<!-- ===================================================== -->
 <div class="page-container">
 
-    <!-- ================= ÁREA ÚTIL (ESQUERDA) ================= -->
     <main class="content">
 
-        <!-- ================= FORMULÁRIO ================= -->
+        <!-- ===================================================== -->
+        <!-- 📝 FORMULÁRIO - NOVA TAREFA -->
+        <!-- ===================================================== -->
         <div class="form-card">
+
             <h2>Nova Tarefa</h2>
 
             <input id="title" placeholder="Título">
@@ -50,10 +89,15 @@
             </select>
 
             <button id="submitBtn" onclick="createTask()">Criar</button>
+
         </div>
 
-        <!-- ================= BUSCA E FILTRO ================= -->
+
+        <!-- ===================================================== -->
+        <!-- 🔎 FILTROS -->
+        <!-- ===================================================== -->
         <div class="task-filters">
+
             <input
                 type="text"
                 id="searchInput"
@@ -67,36 +111,63 @@
                 <option value="IN_PROGRESS">Em andamento</option>
                 <option value="COMPLETED">Concluída</option>
             </select>
-        </div>
-		
-		<select id="filterUser">
-		    <option value="ALL">Todos os usuários</option>
-		</select>
 
-        <!-- =========== CARREGAR TAREFAS =============== -->
-        <div id="loading" style="display:none;" class="loading">
+        </div>
+
+        <!-- FILTRO POR USUÁRIO -->
+        <select id="filterUser">
+            <option value="ALL">Todos os usuários</option>
+        </select>
+
+
+        <!-- ===================================================== -->
+        <!-- ⏳ LOADING -->
+        <!-- ===================================================== -->
+        <div id="loading" class="loading" style="display:none;">
             Carregando tarefas...
         </div>
 
-        <!-- ================= LISTA DE TAREFAS ================= -->
+
+        <!-- ===================================================== -->
+        <!-- 📊 DASHBOARD (SEPARADO DO HEADER) -->
+        <!-- ===================================================== -->
+        <div class="dashboard">
+            <div>Total: <span id="totalTasks"></span></div>
+            <div>Pendentes: <span id="pendingTasks"></span></div>
+            <div>Em andamento: <span id="progressTasks"></span></div>
+            <div>Concluídas: <span id="doneTasks"></span></div>
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- 📋 HEADER DA LISTA -->
+        <!-- ===================================================== -->
         <div class="tasks-header">
             <h2>Tarefas</h2>
             <div id="paginationTop" class="pagination inline"></div>
         </div>
 
+
+        <!-- ===================================================== -->
+        <!-- 📌 LISTA DE TAREFAS -->
+        <!-- ===================================================== -->
         <ul id="taskList"></ul>
 
+
+        <!-- ===================================================== -->
+        <!-- 🔢 PAGINAÇÃO -->
+        <!-- ===================================================== -->
         <div id="paginationBottom" class="pagination"></div>
 
-    </main> <!-- ✅ FECHAMENTO CORRETO DO MAIN -->
-
-    <!-- ================= BACKGROUND (DIREITA) ================= -->
-    <aside class="background-image"></aside>
+    </main>
 
 </div>
 
-<!-- ================= JS ================= -->
-<script src="app.js"></script>
+
+<!-- ===================================================== -->
+<!-- ⚙️ JS -->
+<!-- ===================================================== -->
+<script src="/js/app.js"></script>
 
 </body>
 </html>

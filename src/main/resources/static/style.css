@@ -220,27 +220,12 @@ body {
 /* ================= LAYOUT ================= */
 .page-container {
     display: flex;
-    height: calc(100vh - 96px);
+    margin-top: 118px; /* altura do banner */
+    margin-left: 80px; /* sidebar fechada */
+    transition: 0.3s;
 }
 
-/* ================= CONTEÚDO ================= */
-.content {
-    width: 60%;
-    padding: 32px 40px;
-    overflow-y: auto;
-    background-color: #ffffff;
-}
 
-/* ================= BACKGROUND DIREITO ================= */
-.background-image {
-    width: 40%;
-    background-image: url("imagens/DESENVOLVIMENTO ECONOMICO.png");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    background-color: #FFE6CB;
-    opacity: 0.8;
-}
 
 /* ================= FORM ================= */
 .form-card {
@@ -447,4 +432,227 @@ input:focus, select:focus {
     .task-filters {
         flex-direction: column;
     }
+}
+
+/* ================= BANNER ================= */
+.banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    padding-left: 30px;
+    background-color: #F15A22;
+}
+
+.banner img {
+    height: 100px;
+    width: 40%;
+    object-fit: contain;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    position: fixed;
+    top: 100px;
+    left: 0;
+
+    width: 70px;
+    height: calc(100vh - 100px);
+
+    background: #3a6d65;
+    color: white;
+
+    transition: 0.3s;
+    overflow: hidden;
+    z-index: 999;
+}
+
+.sidebar.open {
+    width: 250px;
+}
+
+/* ================= HEADER ================= */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+}
+
+.sidebar-header button {
+    background: #F15A22;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+/* esconder botão quando fechado */
+.sidebar:not(.open) .sidebar-header button {
+    display: none;
+}
+
+/* ================= CONTEÚDO ================= */
+.sidebar-content {
+    padding: 10px;
+}
+
+/* título */
+.sidebar-content h3 {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+
+.sidebar-content {
+    padding: 20px 10px;
+    overflow-y: auto; /* 🔥 SCROLL */
+    max-height: calc(100vh - 140px); /* 🔥 evita estourar */
+}
+
+/* esconder título quando fechado */
+.sidebar:not(.open) .sidebar-content h3 {
+    display: none;
+}
+
+/* ================= LISTA ================= */
+#lista-setores {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* container setor */
+.setor-container {
+    margin-bottom: 8px;
+}
+
+/* ================= HEADER DO SETOR ================= */
+.setor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 10px;
+    border-radius: 6px;
+
+    background: #1e293b;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.setor-header:hover {
+    background: #334155;
+}
+
+/* texto */
+.setor-header .text {
+    flex: 1;
+    margin-left: 8px;
+}
+
+/* esconder texto quando sidebar fechada */
+.sidebar:not(.open) .setor-header .text {
+    display: none;
+}
+
+/* centralizar quando fechado */
+.sidebar:not(.open) .setor-header {
+    justify-content: center;
+}
+
+/* ================= SETA ================= */
+.setor-header .arrow {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+/* girar seta quando aberto */
+.setor-container.open .arrow {
+    transform: rotate(90deg);
+}
+
+/* ================= USERS ================= */
+.setor-users {
+    display: none;
+    padding-left: 15px;
+    margin-top: 5px;
+}
+
+.setor-container.open .setor-users {
+    display: block;
+}
+
+/* usuário */
+.setor-users li {
+    padding: 6px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.setor-users li:hover {
+    background: #334155;
+}
+
+/* ================= BOTÃO MENU ================= */
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+}
+
+.toggle-btn:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* esconder texto botão quando fechado */
+.sidebar:not(.open) .toggle-btn .text {
+    display: none;
+}
+
+/* centralizar botão */
+.sidebar:not(.open) .toggle-btn {
+    justify-content: center;
+}
+
+/* buscador setor */ 
+
+#searchSetor {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+}
+
+/* =========DASHBOARDS===== */
+
+.dashboard {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.dashboard div {
+    background: #1e293b;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
 }

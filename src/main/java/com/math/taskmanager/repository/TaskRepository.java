@@ -24,4 +24,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             TaskStatus status,
             Pageable pageable
     );
+
+    Page<Task> findByUserSectorId(Long sectorId, Pageable pageable);
+
 }
