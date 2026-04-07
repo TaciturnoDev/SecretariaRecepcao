@@ -73,27 +73,32 @@ async function createTask() {
             ? "PUT" 
             : "POST";
 
+        const bodyData = {
+            title,
+            description,
+            status
+        };
+
+        // só adiciona se existir setor
+        if (typeof loggedUserSectorId !== "undefined" && loggedUserSectorId !== null) {
+            bodyData.sectorId = loggedUserSectorId;
+        }
+
         const response = await fetch(url, {
             method: method,
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                title,
-                description,
-                status,
-                sectorId: loggedUserSectorId || null
-            })
+            body: JSON.stringify(bodyData)
         });
 
         if (response.ok) {
             await carregarTarefas();
             limparFormulario();
-
             editingTaskId = null;
-            document.getElementById("submitBtn").innerText = "Criar";
-
         } else {
+            const errorText = await response.text();
+            console.error("Erro backend:", errorText);
             alert("Erro ao salvar tarefa");
         }
 
@@ -101,7 +106,6 @@ async function createTask() {
         console.error("Erro:", error);
     }
 }
-
 /* ================= LIMPAR ================= */
 function limparFormulario() {
     document.getElementById("title").value = "";
@@ -365,7 +369,7 @@ async function carregarTarefas() {
 /* ================= CARREGAR SETORES ================= */
 async function carregarSetores() {
     try {
-        const response = await fetch("/sectors/with-users"); // ✅ VOLTA PRO ENDPOINT CERTO
+        const response = await fetch("/sectors/with-users"); // endpoint sectores corretos
 
         if (!response.ok) throw new Error("Erro ao buscar setores");
 
