@@ -26,6 +26,11 @@
         <input type="text" id="login" placeholder="Login" />
         <input type="password" id="senha" placeholder="Senha" />
 
+        <!-- 🔹 Select para setor -->
+        <select id="setor" required>
+            <option value="">Selecione o setor</option>
+        </select>
+
         <button onclick="criarConta()">Criar</button>
     </div>
 
@@ -34,25 +39,61 @@
 <script>
 function abrirPrimeiroAcesso() {
     document.getElementById("primeiro-acesso").style.display = "block";
+    carregarSetores(); // carregar setores quando abrir
 }
 
-async function criarConta() {
-    const response = await fetch("/users", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            cpf: document.getElementById("cpf").value,
-            name: document.getElementById("nome").value,
-            login: document.getElementById("login").value,
-            password: document.getElementById("senha").value
-        })
-    });
+// 🔹 Carregar setores ativos do backend
+async function carregarSetores() {
+    try {
+        const response = await fetch("/sectors/active");
+        const setores = await response.json();
+        const select = document.getElementById("setor");
+        select.innerHTML = '<option value="">Selecione o setor</option>'; // reset
+        setores.forEach(s => {
+            const option = document.createElement("option");
+            option.value = s.id;
+            option.text = s.name;
+            select.appendChild(option);
+        });
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao carregar setores");
+    }
+}
 
-    if (response.ok) {
-        alert("Conta criada!");
-        location.reload();
-    } else {
-        alert("Erro ao criar conta");
+// 🔹 Criar conta com setor
+async function criarConta() {
+    const setorId = document.getElementById("setor").value;
+    if (!setorId) {
+        alert("Selecione um setor");
+        return;
+    }
+
+    try {
+        const response = await fetch("/auth/first-access", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                cpf: document.getElementById("cpf").value.replace(/\D/g, ""),
+                name: document.getElementById("nome").value,
+                login: document.getElementById("login").value,
+                password: document.getElementById("senha").value,
+                sectorId: setorId // 🔹 envio do setor
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Conta criada com sucesso!");
+            location.reload();
+        } else {
+            alert(data.error || "Erro ao criar conta");
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao conectar com o servidor");
     }
 }
 </script>

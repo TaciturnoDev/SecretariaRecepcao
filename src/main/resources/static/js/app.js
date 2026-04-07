@@ -1,9 +1,12 @@
 let loggedUser = null;
+let loggedUserSectorId = null;
 
 let tasks = [];
 let filteredTasks = [];
 let currentPage = 1;
 let editingTaskId = null;
+
+let sectors = [];
 
 const ITEMS_PER_PAGE = 6;
 
@@ -13,7 +16,40 @@ function normalizeCPF(cpf) {
     return cpf.replace(/\D/g, "");
 }
 
-/* ================= CRIAR ================= */
+/* ================= LOGOUT ================= */
+async function logout() {
+    try {
+        await fetch("/logout", { method: "POST" });
+    } catch (e) {
+        console.error("Erro ao sair:", e);
+    } finally {
+        window.location.href = "/login";
+    }
+}
+
+/* ================= SIDEBAR ================= */
+function toggleSidebar() {
+    const sidebar = document.querySelector(".sidebar");
+    if (sidebar) {
+        sidebar.classList.toggle("open");
+    }
+}
+
+/* ================= FILTRO SETORES ================= */
+function filtrarSetores() {
+    const input = document.getElementById("searchSetor");
+    if (!input) return;
+
+    const filter = input.value.toLowerCase();
+    const items = document.querySelectorAll(".sector-item");
+
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+
+/* ================= CRIAR / ATUALIZAR ================= */
 async function createTask() {
 
     if (!loggedUser) {
@@ -23,24 +59,40 @@ async function createTask() {
 
     const title = document.getElementById("title").value.trim();
     const description = document.getElementById("description").value.trim();
+    const status = document.getElementById("status")?.value || "PENDING";
 
     if (!title) return;
 
     try {
-        const response = await fetch("/tasks", {
-            method: "POST",
+
+        const url = editingTaskId 
+            ? `/tasks/${editingTaskId}` 
+            : "/tasks";
+
+        const method = editingTaskId 
+            ? "PUT" 
+            : "POST";
+
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 title,
-                description
+                description,
+                status,
+                sectorId: loggedUserSectorId || null
             })
         });
 
         if (response.ok) {
             await carregarTarefas();
             limparFormulario();
+
+            editingTaskId = null;
+            document.getElementById("submitBtn").innerText = "Criar";
+
         } else {
             alert("Erro ao salvar tarefa");
         }
@@ -54,29 +106,30 @@ async function createTask() {
 function limparFormulario() {
     document.getElementById("title").value = "";
     document.getElementById("description").value = "";
+    const statusEl = document.getElementById("status");
+    if (statusEl) statusEl.value = "PENDING"; 
 }
 
 /* ================= FILTROS ================= */
 function aplicarFiltros() {
 
-    const searchRaw = document.getElementById("searchInput").value.toLowerCase().trim();
+    const searchRaw = document.getElementById("searchInput")?.value.toLowerCase().trim() || "";
     const searchCPF = normalizeCPF(searchRaw);
 
-    const statusFilter = document.getElementById("filterStatus").value;
-    const userFilter = document.getElementById("filterUser").value;
+    const statusFilter = document.getElementById("filterStatus")?.value || "ALL";
+    const userFilter = document.getElementById("filterUser")?.value || "ALL";
 
     filteredTasks = tasks.filter(task => {
 
         const matchUser =
-            userFilter === "ALL" || task.userName === userFilter;
+            userFilter === "ALL" || (task.userName && task.userName === userFilter);
 
         const matchStatus =
             statusFilter === "ALL" || task.status === statusFilter;
 
         const title = task.title?.toLowerCase() || "";
         const description = task.description?.toLowerCase() || "";
-
-        const taskCPF = normalizeCPF(task.cpf);
+        const taskCPF = normalizeCPF(task.cpf || "");
 
         const matchSearch =
             !searchRaw ||
@@ -87,6 +140,7 @@ function aplicarFiltros() {
         return matchUser && matchStatus && matchSearch;
     });
 
+    currentPage = 1;
     render();
 }
 
@@ -100,9 +154,11 @@ function render() {
 function renderTasks() {
 
     const list = document.getElementById("taskList");
+    if (!list) return;
+
     list.innerHTML = "";
 
-    if (filteredTasks.length === 0) {
+    if (!filteredTasks || filteredTasks.length === 0) {
         list.innerHTML = "<p style='text-align:center;'>Nenhuma tarefa encontrada.</p>";
         return;
     }
@@ -110,7 +166,9 @@ function renderTasks() {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
 
-    filteredTasks.slice(start, end).forEach(task => {
+    const pageItems = filteredTasks.slice(start, end);
+
+    pageItems.forEach(task => {
 
         const li = document.createElement("li");
         li.className = "task-card";
@@ -136,6 +194,7 @@ function renderTasks() {
             </div>
 
             <div class="task-actions">
+                <button onclick="editTask(${task.id})">✏️</button>
                 <button onclick="deleteTask(${task.id})">❌</button>
             </div>
         `;
@@ -165,15 +224,36 @@ async function deleteTask(id) {
     }
 }
 
+/* ================= EDITAR ================= */
+function editTask(id) {
+
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    document.getElementById("title").value = task.title;
+    document.getElementById("description").value = task.description || "";
+    document.getElementById("status").value = task.status;
+
+    editingTaskId = id;
+
+    document.getElementById("submitBtn").innerText = "Atualizar";
+}
+
 /* ================= PAGINAÇÃO ================= */
 function renderPagination() {
 
     const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE);
 
-    const top = document.getElementById("paginationTop");
-    const bottom = document.getElementById("paginationBottom");
+    if (currentPage > totalPages) {
+        currentPage = totalPages || 1;
+    }
 
-    [top, bottom].forEach(container => {
+    const containers = [
+        document.getElementById("paginationTop"),
+        document.getElementById("paginationBottom")
+    ];
+
+    containers.forEach(container => {
 
         if (!container) return;
 
@@ -213,13 +293,14 @@ function getStatusLabel(status) {
 /* ================= DATA ================= */
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR");
+    return isNaN(date) ? "" : date.toLocaleDateString("pt-BR");
 }
 
 /* ================= USER FILTER ================= */
 function updateUserFilterOptions() {
 
     const select = document.getElementById("filterUser");
+    if (!select) return;
 
     const users = [...new Set(tasks.map(t => t.userName))];
 
@@ -235,54 +316,17 @@ function updateUserFilterOptions() {
     });
 }
 
-/* ================= SETORES ================= */
-async function carregarSetores() {
-
-    const response = await fetch("/sectors/with-users");
-    const setores = await response.json();
-
-    const lista = document.getElementById("lista-setores");
-    lista.innerHTML = "";
-
-    setores.forEach(setor => {
-
-		const li = document.createElement("li");
-		li.classList.add("setor-container");
-
-		li.innerHTML = `
-		    <div class="setor-header" onclick="toggleSetor(this)">
-		        <span class="icon">📁</span>
-		        <span class="text">${setor.name}</span>
-		        <span class="arrow">▶</span>
-		    </div>
-		    <ul class="setor-users"></ul>
-		`;
-
-        const ul = li.querySelector(".setor-users");
-
-        setor.users.forEach(user => {
-            const userLi = document.createElement("li");
-            userLi.innerText = "👤 " + user.name;
-            ul.appendChild(userLi);
-        });
-
-        lista.appendChild(li);
-    });
-}
-
-function toggleSetor(el) {
-    const container = el.parentElement;
-    container.classList.toggle("open");
-}
-
 /* ================= USUÁRIO LOGADO ================= */
 async function carregarUsuarioLogado() {
     try {
         const response = await fetch("/auth/me");
 
+        if (!response.ok) throw new Error("Não autenticado");
+
         const data = await response.json();
 
-        loggedUser = data.username;
+        loggedUser = data;
+        loggedUserSectorId = data.sectorId || null;
 
         document.getElementById("loggedUserName").innerText = data.username;
 
@@ -294,16 +338,106 @@ async function carregarUsuarioLogado() {
 /* ================= CARREGAR TAREFAS ================= */
 async function carregarTarefas() {
 
-    const response = await fetch("/tasks?page=0&size=50");
+    try {
+        const response = await fetch("/tasks?page=0&size=50");
 
-    const data = await response.json();
+        if (!response.ok) throw new Error("Erro ao buscar tarefas");
 
-    tasks = data.content;
+        const data = await response.json();
 
-    updateUserFilterOptions();
-    aplicarFiltros();
+        tasks = Array.isArray(data) ? data : (data.content || []);
+
+        tasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        filteredTasks = [...tasks];
+
+        updateUserFilterOptions();
+        aplicarFiltros();
+
+    } catch (e) {
+        console.error(e);
+        tasks = [];
+        filteredTasks = [];
+        render();
+    }
 }
 
+/* ================= CARREGAR SETORES ================= */
+async function carregarSetores() {
+    try {
+        const response = await fetch("/sectors/with-users"); // ✅ VOLTA PRO ENDPOINT CERTO
+
+        if (!response.ok) throw new Error("Erro ao buscar setores");
+
+        const data = await response.json();
+
+        sectors = Array.isArray(data) ? data : (data.content || []);
+
+        renderSetores();
+
+    } catch (e) {
+        console.error("Erro ao carregar setores:", e);
+    }
+}
+/* ============== SETORES RENDERIZAR ====== */
+
+function renderSetores() {
+
+    const list = document.getElementById("lista-setores");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    sectors.forEach(sector => {
+
+        const li = document.createElement("li");
+        li.className = "sector-item";
+
+        // HEADER DO SETOR
+        const header = document.createElement("div");
+        header.className = "sector-header";
+        header.innerHTML = `
+            <span class="sector-icon">📁</span>
+            <span class="sector-name">${sector.name}</span>
+        `;
+
+        // LISTA DE USUÁRIOS (INICIALMENTE ESCONDIDA)
+        const usersList = document.createElement("ul");
+        usersList.className = "sector-users";
+        usersList.style.display = "none";
+
+        // 🔥 CORREÇÃO AQUI (compatível com qualquer nome vindo do backend)
+        const users =
+            sector.users ||
+            sector.userList ||
+            sector.usersList ||
+            sector.usuarios ||
+            [];
+
+        if (users.length > 0) {
+            users.forEach(user => {
+                const userLi = document.createElement("li");
+                userLi.className = "user-item";
+                userLi.innerText = `👤 ${user.name || user.username}`;
+                usersList.appendChild(userLi);
+            });
+        } else {
+            const empty = document.createElement("li");
+            empty.innerText = "Sem usuários";
+            usersList.appendChild(empty);
+        }
+
+        // TOGGLE (EXPANDIR / RECOLHER)
+        header.onclick = () => {
+            usersList.style.display =
+                usersList.style.display === "none" ? "block" : "none";
+        };
+
+        li.appendChild(header);
+        li.appendChild(usersList);
+        list.appendChild(li);
+    });
+}
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -312,84 +446,5 @@ document.addEventListener("DOMContentLoaded", () => {
     carregarSetores();
 
     document.getElementById("filterUser")
-        .addEventListener("change", aplicarFiltros);
+        ?.addEventListener("change", aplicarFiltros);
 });
-
-/* ======= EXPANDIR FUNÇÃO===== */
-function toggleSidebar() {
-    const sidebar = document.querySelector(".sidebar");
-    sidebar.classList.toggle("open");
-}
-
-/* ================= CRIAR SETOR ================= */
-async function abrirCriarSetor() {
-
-    const nome = prompt("Nome do setor:");
-
-    if (!nome || nome.trim() === "") {
-        alert("Nome inválido");
-        return;
-    }
-
-    try {
-        const response = await fetch("/sectors", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: nome
-            })
-        });
-
-        if (response.ok) {
-            await carregarSetores(); // 🔥 recarrega lista
-        } else {
-            alert("Erro ao criar setor");
-        }
-
-    } catch (e) {
-        console.error("Erro:", e);
-    }
-}
-
-/* FILTROS SETORES */ 
-
-function filtrarSetores() {
-
-    const termo = document
-        .getElementById("searchSetor")
-        .value.toLowerCase();
-
-    const setores = document.querySelectorAll(".setor-container");
-
-    setores.forEach(setor => {
-
-        const nome = setor
-            .querySelector(".text")
-            .innerText
-            .toLowerCase();
-
-        if (nome.includes(termo)) {
-            setor.style.display = "block";
-        } else {
-            setor.style.display = "none";
-        }
-    });
-}
-
-/* ======== DASHBOARDS ======== */ 
-
-function atualizarDashboard() {
-
-    document.getElementById("totalTasks").innerText = tasks.length;
-
-    document.getElementById("pendingTasks").innerText =
-        tasks.filter(t => t.status === "PENDING").length;
-
-    document.getElementById("progressTasks").innerText =
-        tasks.filter(t => t.status === "IN_PROGRESS").length;
-
-    document.getElementById("doneTasks").innerText =
-        tasks.filter(t => t.status === "COMPLETED").length;
-}

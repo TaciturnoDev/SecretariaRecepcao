@@ -23,6 +23,10 @@ public class Sector {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean active = true; // 🔥 nunca será null
+
     @JsonIgnore
     @OneToMany(mappedBy = "sector", fetch = FetchType.LAZY)
     private List<User> users;

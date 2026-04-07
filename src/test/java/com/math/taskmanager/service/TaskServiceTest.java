@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,17 +11,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import com.math.taskmanager.dto.TaskRequestDTO;
 import com.math.taskmanager.dto.TaskResponseDTO;
-import com.math.taskmanager.entity.Task;
-import com.math.taskmanager.entity.TaskStatus;
-import com.math.taskmanager.entity.User;
+import com.math.taskmanager.entity.*;
+import com.math.taskmanager.exception.BusinessRuleException;
 import com.math.taskmanager.repository.TaskRepository;
-import com.math.taskmanager.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
@@ -31,7 +24,10 @@ class TaskServiceTest {
     private TaskRepository taskRepository;
 
     @Mock
-    private UserRepository userRepository;
+    private UserService userService;
+
+    @Mock
+    private SectorService sectorService;
 
     @InjectMocks
     private TaskService taskService;
@@ -39,25 +35,22 @@ class TaskServiceTest {
     @Test
     void deveCriarTarefaComSucesso() {
 
-        // =========================
-        // MOCK USUÁRIO LOGADO
-        // =========================
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("admin");
+        String login = "admin";
 
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+        // ===== SECTOR =====
+        Sector sector = new Sector();
+        sector.setId(1L);
+        sector.setName("TI");
 
-        SecurityContextHolder.setContext(securityContext);
-
-        // =========================
-        // ARRANGE
-        // =========================
+        // ===== USER =====
         User user = new User();
         user.setId(1L);
         user.setName("Marcos");
-        user.setLogin("admin");
+        user.setLogin(login);
+        user.setSector(sector);
+        user.setRole(Role.USER);
 
+        // ===== TASK =====
         Task task = new Task();
         task.setId(1L);
         task.setTitle("Teste");
@@ -65,26 +58,21 @@ class TaskServiceTest {
         task.setStatus(TaskStatus.PENDING);
         task.setCreatedAt(LocalDateTime.now());
         task.setUser(user);
+        task.setSector(sector);
 
+        // ⚠️ IMPORTANTE: se seu DTO tem sectorId
         TaskRequestDTO dto = new TaskRequestDTO(
-                "Teste",
-                "Descrição"
-        );
+        	    "Teste",
+        	    "Descrição",
+        	    null,   // status
+        	    null    // sectorId
+        	);
 
-        when(userRepository.findByLogin("admin"))
-                .thenReturn(Optional.of(user));
+        when(userService.findByLogin(login)).thenReturn(user);
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
 
-        when(taskRepository.save(any(Task.class)))
-                .thenReturn(task);
+        TaskResponseDTO response = taskService.create(dto, login);
 
-        // =========================
-        // ACT
-        // =========================
-        TaskResponseDTO response = taskService.create(dto);
-
-        // =========================
-        // ASSERT
-        // =========================
         assertNotNull(response);
         assertEquals("Teste", response.title());
         assertEquals(TaskStatus.PENDING, response.status());
@@ -93,36 +81,26 @@ class TaskServiceTest {
     }
 
     @Test
-    void deveLancarErroQuandoUsuarioNaoExiste() {
+    void deveLancarErroQuandoUsuarioSemSetor() {
 
-        // =========================
-        // MOCK USUÁRIO LOGADO
-        // =========================
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("admin");
+        String login = "admin";
 
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
+        User user = new User();
+        user.setLogin(login);
+        user.setRole(Role.USER);
 
-        SecurityContextHolder.setContext(securityContext);
-
-        // =========================
-        // ARRANGE
-        // =========================
         TaskRequestDTO dto = new TaskRequestDTO(
-                "Teste",
-                "Descrição"
-        );
+        	    "Teste",
+        	    "Descrição",
+        	    null,   // status
+        	    null    // sectorId
+        	);
 
-        when(userRepository.findByLogin("admin"))
-                .thenReturn(Optional.empty());
+        when(userService.findByLogin(login)).thenReturn(user);
 
-        // =========================
-        // ACT + ASSERT
-        // =========================
         assertThrows(
-                RuntimeException.class, // 🔥 ajustado ao seu service
-                () -> taskService.create(dto)
+                BusinessRuleException.class,
+                () -> taskService.create(dto, login)
         );
     }
 }

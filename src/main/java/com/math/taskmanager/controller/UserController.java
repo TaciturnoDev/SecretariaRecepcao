@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.math.taskmanager.dto.UserResponseDTO; // 🔥 IMPORT IMPORTANTE
+import com.math.taskmanager.dto.UserRequestDTO;
+import com.math.taskmanager.dto.UserResponseDTO;
 import com.math.taskmanager.entity.User;
 import com.math.taskmanager.service.UserService;
 
@@ -20,19 +21,28 @@ public class UserController {
     private final UserService userService;
 
     /*
-     * Criar funcionário
+     * ==============================
+     * 🔥 CRIAR USUÁRIO COM SETOR
+     * ==============================
      */
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
-        User created = userService.create(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    public ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO dto) {
+
+        User created = userService.create(dto);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new UserResponseDTO(created));
     }
 
     /*
-     * Listar todos
+     * ==============================
+     * LISTAR TODOS
+     * ==============================
      */
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll() {
+
         List<UserResponseDTO> users = userService.findAll()
                 .stream()
                 .map(UserResponseDTO::new)
@@ -42,7 +52,9 @@ public class UserController {
     }
 
     /*
-     * Buscar por ID
+     * ==============================
+     * BUSCAR POR ID
+     * ==============================
      */
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
@@ -50,7 +62,9 @@ public class UserController {
     }
 
     /*
-     * Buscar por nome (somente ativo)
+     * ==============================
+     * BUSCAR POR NOME (ATIVO)
+     * ==============================
      */
     @GetMapping("/profile/{name}")
     public ResponseEntity<UserResponseDTO> findByName(@PathVariable String name) {
@@ -58,7 +72,9 @@ public class UserController {
     }
 
     /*
-     * Inativar funcionário
+     * ==============================
+     * DESATIVAR USUÁRIO
+     * ==============================
      */
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<Void> deactivate(@PathVariable Long id) {
@@ -67,11 +83,29 @@ public class UserController {
     }
 
     /*
-     * Exclusão física
+     * ==============================
+     * DELETE REAL
+     * ==============================
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /*
+     * ==============================
+     * 🔥 SUPERADMIN - ALTERAR SETOR
+     * ==============================
+     */
+    @PutMapping("/{id}/sector/{sectorId}")
+    public ResponseEntity<Void> updateSector(
+            @PathVariable Long id,
+            @PathVariable Long sectorId
+    ) {
+
+        userService.updateSector(id, sectorId);
+
         return ResponseEntity.noContent().build();
     }
 }

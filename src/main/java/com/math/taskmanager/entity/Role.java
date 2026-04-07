@@ -1,9 +1,7 @@
 package com.math.taskmanager.entity;
 
 public enum Role {
-
-    SUPER_ADMIN,
+    USER,
     ADMIN,
-    USER
-
+    SUPERADMIN
 }

@@ -23,14 +23,21 @@ public class SecurityConfig {
                     "/login",
                     "/error",
                     "/css/**",
-                    "/js/**"
+                    "/js/**",
+
+                    //  LIBERAR PRIMEIRO ACESSO
+                    "/auth/first-access",
+                    "/auth/me",
+
+                    //  LIBERAR SETORES (ESSENCIAL)
+                    "/sectors/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
 
             .formLogin(form -> form
                 .loginPage("/login")
-                .loginProcessingUrl("/login") // 🔥 ESSENCIAL
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/index.html", true)
                 .permitAll()
             )

@@ -1,13 +1,11 @@
 package com.math.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.math.taskmanager.entity.Role;
-import com.math.taskmanager.entity.Sector;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +20,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
@@ -43,10 +42,11 @@ public class User {
     private Role role = Role.USER;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sector_id")
+    @JoinColumn(name = "sector_id", nullable = false)
     private Sector sector;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
 
     @Column(nullable = false, updatable = false)
@@ -55,7 +55,9 @@ public class User {
     @PrePersist
     public void prePersist() {
 
-        this.createdAt = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
 
         if (this.active == null) {
             this.active = true;
@@ -64,5 +66,10 @@ public class User {
         if (this.role == null) {
             this.role = Role.USER;
         }
+    }
+
+    // 🔥 ESSENCIAL PRO TASKSERVICE
+    public boolean isSuperAdmin() {
+        return Role.SUPERADMIN.equals(this.role);
     }
 }

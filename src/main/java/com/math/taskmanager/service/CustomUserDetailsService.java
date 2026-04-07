@@ -30,10 +30,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User user = userOptional.get();
 
+        // 🔥 CORREÇÃO 1: validar ativo
+        if (!user.getActive()) {
+            throw new UsernameNotFoundException("Usuário inativo");
+        }
+
+        // 🔥 CORREÇÃO 2: garantir role
+        String role = (user.getRole() != null) 
+                ? user.getRole().name() 
+                : "USER";
+
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getLogin())
                 .password(user.getPassword())
-                .authorities("ROLE_" + user.getRole().name()) // 🔥 CORREÇÃO
+                .roles(role) // 🔥 MELHOR PRÁTICA
                 .build();
     }
 }

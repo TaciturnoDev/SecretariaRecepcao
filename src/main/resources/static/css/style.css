@@ -281,6 +281,7 @@ input:focus, select:focus {
 
 .filterUser {
 	padding: lef 20px;
+    margin-top: 20px;
 }
 /* ================= HEADER TAREFAS ================= */
 .tasks-header {
@@ -641,11 +642,12 @@ input:focus, select:focus {
     outline: none;
 }
 
-/* =========DASHBOARDS===== */
+/* ====== DASHBOARDS / TOTAL / PENDENTS/ EM ANDAMENTOS / CONCLUIDAS===== */
 
 .dashboard {
     display: flex;
     gap: 15px;
+    margin-top: 20px; 
     margin-bottom: 15px;
 }
 
@@ -655,4 +657,63 @@ input:focus, select:focus {
     border-radius: 8px;
     color: white;
     font-size: 0.9rem;
+}
+
+/* logout */ 
+
+.user-container button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.6);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-left: 10px;
+
+    transition: all 0.2s ease;
+}
+
+/* hover elegante */
+.user-container button:hover {
+    background: #fff;
+    color: #f25c05;
+    border-color: #fff;
+}
+
+/* clique */
+.user-container button:active {
+    transform: scale(0.95);
+}
+
+.user-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* setores visual */
+.sector-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px;
+    font-weight: bold;
+}
+
+.sector-header:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.sector-icon {
+    margin-right: 8px;
+}
+
+.sector-users {
+    padding-left: 20px;
+}
+
+.user-item {
+    font-size: 14px;
+    margin: 4px 0;
 }

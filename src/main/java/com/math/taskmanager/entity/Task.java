@@ -1,5 +1,6 @@
 package com.math.taskmanager.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -43,15 +44,29 @@ public class Task extends BaseEntity {
     @Column(nullable = false)
     private Boolean active = true;
 
+    /*
+     * 🔗 Usuário responsável pela tarefa
+     */
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    /*
+     * 🔥 Setor da tarefa (OBRIGATÓRIO)
+     */
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sector_id", nullable = false)
+    private Sector sector;
+
     @PrePersist
     public void prePersist() {
+
         if (this.status == null) {
             this.status = TaskStatus.PENDING;
         }
+
         if (this.active == null) {
             this.active = true;
         }

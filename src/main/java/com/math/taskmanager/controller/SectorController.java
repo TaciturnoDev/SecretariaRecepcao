@@ -4,6 +4,7 @@ import com.math.taskmanager.entity.Sector;
 import com.math.taskmanager.repository.SectorRepository;
 import com.math.taskmanager.dto.SectorWithUsersDTO;
 import com.math.taskmanager.dto.UserDTO;
+import com.math.taskmanager.dto.SectorDTO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,22 @@ public class SectorController {
 
     private final SectorRepository sectorRepository;
 
-    // 🔹 LISTAR SETORES SIMPLES
+    // 🔹 LISTAR SETORES SIMPLES (CORRIGIDO)
     @GetMapping
-    public List<Sector> listar() {
-        return sectorRepository.findAll();
+    public List<SectorDTO> listar() {
+        return sectorRepository.findAll()
+                .stream()
+                .map(sector -> new SectorDTO(sector.getId(), sector.getName()))
+                .toList();
+    }
+
+    // 🔹 LISTAR SETORES ATIVOS (USADO NO LOGIN)
+    @GetMapping("/active")
+    public List<SectorDTO> listarAtivos() {
+        return sectorRepository.findByActiveTrue()
+                .stream()
+                .map(sector -> new SectorDTO(sector.getId(), sector.getName()))
+                .toList();
     }
 
     // 🔹 CRIAR SETOR

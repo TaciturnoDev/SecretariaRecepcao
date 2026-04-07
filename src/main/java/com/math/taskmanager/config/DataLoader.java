@@ -31,7 +31,7 @@ public class DataLoader implements CommandLineRunner {
             user.setLogin("admin");
             user.setCpf("00000000000");
             user.setPassword(passwordEncoder.encode("admin123"));
-            user.setRole(Role.SUPER_ADMIN);
+            user.setRole(Role.SUPERADMIN); // ✅ corrigido
             user.setActive(true);
             user.setCreatedAt(LocalDateTime.now());
 
