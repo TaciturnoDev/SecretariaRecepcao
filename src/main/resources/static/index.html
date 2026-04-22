@@ -99,41 +99,40 @@
         <!-- ===================================================== -->
         <!-- 🔎 FILTROS -->
         <!-- ===================================================== -->
-        <div class="task-filters">
+		<div class="task-filters">
 
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Buscar por nome, descrição ou CPF"
-                oninput="aplicarFiltros()"
-            >
+		    <input
+		        type="text"
+		        id="searchInput"
+		        placeholder="Buscar por nome, descrição ou CPF"
+		        oninput="aplicarFiltros()"
+		    >
 
-            <select id="filterStatus" onchange="aplicarFiltros()">
-                <option value="ALL">Todos</option>
-                <option value="PENDING">Pendente</option>
-                <option value="IN_PROGRESS">Em andamento</option>
-                <option value="COMPLETED">Concluída</option>
-            </select>
+		    <select id="filterStatus" onchange="aplicarFiltros()">
+		        <option value="ALL">Todos</option>
+		        <option value="PENDING">Pendente</option>
+		        <option value="IN_PROGRESS">Em andamento</option>
+		        <option value="COMPLETED">Concluída</option>
+		    </select>
 
-        </div>
+		    <!-- 👇 NOVO: FILTRO DE SETOR (VISÍVEL PARA SUPERADMIN) -->
+		    <select id="sectorSelect" onchange="aplicarFiltros()" style="display:none;">
+		        <option value="ALL">Todos os setores</option>
+		    </select>
 
-        <!-- FILTRO POR USUÁRIO -->
-        <select id="filterUser">
-            <option value="ALL">Todos os usuários</option>
-        </select>
-		
-		<!-- ======= SUPERADMIN VISUAL ======== 
-		   <select id="sectorSelect" onchange="aplicarFiltros()" style="display:none;">
-		       <option value="">Todos os setores</option>
-		   </select>
-		   -->
+		</div>
 
-        <!-- ===================================================== -->
-        <!-- ⏳ LOADING -->
-        <!-- ===================================================== -->
-        <div id="loading" class="loading" style="display:none;">
-            Carregando tarefas...
-        </div>
+		<!-- FILTRO POR USUÁRIO -->
+		<select id="filterUser" onchange="aplicarFiltros()">
+		    <option value="ALL">Todos os usuários</option>
+		</select>
+
+		<!-- ===================================================== -->
+		<!-- ⏳ LOADING -->
+		<!-- ===================================================== -->
+		<div id="loading" class="loading" style="display:none;">
+		    Carregando tarefas...
+		</div>
 
 		
         <!-- ===================================================== -->

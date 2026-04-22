@@ -1,3 +1,4 @@
+
 let loggedUser = null;
 let loggedUserSectorId = null;
 
@@ -79,9 +80,23 @@ async function createTask() {
             status
         };
 
-        // só adiciona se existir setor
-        if (typeof loggedUserSectorId !== "undefined" && loggedUserSectorId !== null) {
-            bodyData.sectorId = loggedUserSectorId;
+        // 🔥 TRATAMENTO CORRETO DE SETOR
+        if (loggedUser.role === "SUPERADMIN") {
+
+            const selectedSector = document.getElementById("sectorSelect")?.value;
+
+            if (!selectedSector) {
+                alert("Selecione um setor");
+                return;
+            }
+
+            bodyData.sectorId = Number(selectedSector);
+
+        } else {
+
+            if (loggedUserSectorId) {
+                bodyData.sectorId = loggedUserSectorId;
+            }
         }
 
         const response = await fetch(url, {
@@ -333,6 +348,16 @@ async function carregarUsuarioLogado() {
         loggedUserSectorId = data.sectorId || null;
 
         document.getElementById("loggedUserName").innerText = data.username;
+
+        // 🔥 SUPERADMIN vê e carrega setores
+        if (loggedUser.role === "SUPERADMIN") {
+            const sectorSelect = document.getElementById("sectorSelect");
+
+            if (sectorSelect) {
+                sectorSelect.style.display = "inline-block";
+                await loadSectorFilter(); // 🔥 CARREGA OS SETORES
+            }
+        }
 
     } catch (e) {
         console.error("Erro ao pegar usuário:", e);
