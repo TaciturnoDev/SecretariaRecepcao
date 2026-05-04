@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    background: linear-gradient(175deg,    #F15A22, #af4e2b);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -32,7 +32,7 @@ input {
 button {
     width: 100%;
     padding: 10px;
-    background: #4facfe;
+    background: #F15A22;
     border: none;
     color: white;
     border-radius: 5px;
@@ -40,12 +40,12 @@ button {
 }
 
 button:hover {
-    background: #3a8dde;
+    background: #1a7c53;
 }
 
 .link {
     margin-top: 10px;
     display: block;
     cursor: pointer;
-    color: #4facfe;
+    color: #F15A22;
 }

@@ -3,6 +3,7 @@ package com.math.taskmanager.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@EnableMethodSecurity //  necessário pro @PreAuthorize
 public class SecurityConfig {
 
     @Bean
@@ -24,14 +26,14 @@ public class SecurityConfig {
                     "/error",
                     "/css/**",
                     "/js/**",
-
-                    //  LIBERAR PRIMEIRO ACESSO
                     "/auth/first-access",
                     "/auth/me",
-
-                    //  LIBERAR SETORES (ESSENCIAL)
                     "/sectors/**"
                 ).permitAll()
+
+                //  ADMIN protegido
+                .requestMatchers("/admin/**").hasRole("SUPERADMIN")
+
                 .anyRequest().authenticated()
             )
 
@@ -50,6 +52,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    //  ESSENCIAL (isso estava faltando)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
