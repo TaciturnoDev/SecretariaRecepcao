@@ -38,18 +38,18 @@ async function loadTasks() {
     const tbody = document.querySelector("#tasksTable tbody");
     tbody.innerHTML = "";
 
-    data.content.forEach(task => {
-        const tr = document.createElement("tr");
+	data.content.forEach(task => {
+	    const tr = document.createElement("tr");
 
-        tr.innerHTML = `
-            <td>${task.id}</td>
-            <td>${task.title}</td>
-            <td>${task.status}</td>
-            <td>${task.user?.name || "-"}</td>
-        `;
+	    tr.innerHTML = `
+	        <td>${task.id}</td>
+	        <td>${task.title}</td>
+	        <td>${task.status}</td>
+	        <td>${task.userName || "-"}</td>
+	    `;
 
-        tbody.appendChild(tr);
-    });
+	    tbody.appendChild(tr);
+	});
 }
 
 // ==========================
