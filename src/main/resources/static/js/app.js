@@ -477,3 +477,4 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("filterUser")
         ?.addEventListener("change", aplicarFiltros);
 });
+

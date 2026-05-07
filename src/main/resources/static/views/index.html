@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recepção - SDE</title>
+
+    <!-- ================= CSS ================= -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Ícones -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- ===================================================== -->
+<!-- 🔶 BANNER / TOPO -->
+<!-- ===================================================== -->
+<div class="banner">
+
+    <img src="/imagens/desenvolvimento_economico.png" alt="Logo">
+
+    <div class="user-container">
+        <span id="loggedUserName" class="logged-user-name"></span>
+
+        <div class="user-icon" id="userIcon">
+            👤
+        </div>
+
+        <button onclick="logout()">Sair</button>
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- 🔷 SIDEBAR -->
+<!-- ===================================================== -->
+<div id="sidebar" class="sidebar">
+
+    <div class="sidebar-top">
+        <h2>Menu</h2>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li class="active" onclick="goTo('tasks')">
+            <i>📋</i>
+            <span>Tarefas</span>
+        </li>
+
+        <li onclick="goTo('setores')">
+            <i>🏢</i>
+            <span>Setores</span>
+        </li>
+
+        <li onclick="goTo('eventos')">
+            <i>📅</i>
+            <span>Eventos</span>
+        </li>
+
+        <li onclick="goTo('dashboard')">
+            <i>📊</i>
+            <span>Dashboard</span>
+        </li>
+
+        <li onclick="goTo('admin')">
+            <i>🛡️</i>
+            <span>Super Admin</span>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- 🧱 CONTEÚDO -->
+<!-- ===================================================== -->
+<div class="page-container">
+
+    <main class="content">
+
+        <div class="form-card">
+            <h2>Nova Tarefa</h2>
+
+            <input id="title" placeholder="Título">
+            <input id="description" placeholder="Descrição">
+
+            <select id="status">
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em andamento</option>
+                <option value="COMPLETED">Concluída</option>
+            </select>
+
+            <button id="submitBtn" onclick="createTask()">Criar</button>
+        </div>
+
+
+        <div class="task-filters">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar por nome, descrição ou CPF"
+                oninput="aplicarFiltros()"
+            >
+
+            <select id="filterStatus" onchange="aplicarFiltros()">
+                <option value="ALL">Todos</option>
+                <option value="PENDING">Pendente</option>
+                <option value="IN_PROGRESS">Em andamento</option>
+                <option value="COMPLETED">Concluída</option>
+            </select>
+
+            <select id="sectorSelect" onchange="aplicarFiltros()" style="display:none;">
+                <option value="ALL">Todos os setores</option>
+            </select>
+
+        </div>
+
+        <select id="filterUser" onchange="aplicarFiltros()">
+            <option value="ALL">Todos os usuários</option>
+        </select>
+
+        <div id="loading" class="loading" style="display:none;">
+            Carregando tarefas...
+        </div>
+
+        <div class="dashboard">
+            <div>Total: <span id="totalTasks"></span></div>
+            <div>Pendentes: <span id="pendingTasks"></span></div>
+            <div>Em andamento: <span id="progressTasks"></span></div>
+            <div>Concluídas: <span id="doneTasks"></span></div>
+        </div>
+
+        <div class="tasks-header">
+            <h2>Tarefas</h2>
+            <div id="paginationTop" class="pagination inline"></div>
+        </div>
+
+        <ul id="taskList"></ul>
+
+        <div id="paginationBottom" class="pagination"></div>
+
+    </main>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JS -->
+<!-- ===================================================== -->
+<script src="/js/app.js"></script>
+
+<script>
+function goTo(section) {
+
+    if (section === "admin") {
+        window.location.href = "/views/admin.html";
+        return;
+    }
+
+    if (section === "tasks") {
+        window.location.href = "/views/index.html";
+        return;
+    }
+
+    if (section === "eventos") {
+        alert("Eventos em desenvolvimento");
+        return;
+    }
+
+    if (section === "dashboard") {
+        alert("Dashboard em desenvolvimento");
+        return;
+    }
+
+    if (section === "setores") {
+        alert("Setores será integrado aqui");
+        return;
+    }
+}
+</script>
+
+</body>
+</html>

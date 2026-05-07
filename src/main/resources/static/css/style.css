@@ -717,3 +717,108 @@ input:focus, select:focus {
     font-size: 14px;
     margin: 4px 0;
 }
+
+/* ===================================================== */
+/* 🚀 NOVA SIDEBAR (PLATAFORMA) */
+/* ===================================================== */
+
+.sidebar {
+    position: fixed;
+    top: 100px;
+    left: 0;
+
+    width: 220px;
+    height: calc(100vh - 100px);
+
+    background: #1e293b;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: 0.3s;
+    z-index: 999;
+}
+
+/* TOPO */
+.sidebar-top {
+    padding: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* MENU */
+.sidebar-menu {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ITEM */
+.sidebar-menu li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    font-size: 0.95rem;
+}
+
+/* ÍCONE */
+.sidebar-menu li i {
+    font-size: 1.2rem;
+}
+
+/* HOVER */
+.sidebar-menu li:hover {
+    background: #334155;
+    transform: translateX(4px);
+}
+
+/* ATIVO */
+.sidebar-menu li.active {
+    background: #F15A22;
+    color: white;
+    font-weight: 600;
+}
+
+/* ===================================================== */
+/* AJUSTE DO CONTEÚDO (IMPORTANTE) */
+/* ===================================================== */
+
+.page-container {
+    margin-left: 220px; /*  agora acompanha nova sidebar */
+}
+
+/* ===================================================== */
+/*  RESPONSIVO */
+/* ===================================================== */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .sidebar-menu li span {
+        display: none;
+    }
+
+    .sidebar-top {
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    .page-container {
+        margin-left: 70px;
+    }
+}
