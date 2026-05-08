@@ -11,92 +11,40 @@ body {
     color: #414042;
 }
 
-/* ================= HEADER ================= */
-/* ================= HEADER ================= */
-.header {
+/* ================= BANNER ================= */
+.banner {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    background: linear-gradient(
-        90deg,
-        #F15A22 0%,
-        #F15A22 80%,
-        #009889 80%,
-        #009889 100%
-    );
-    color: #ffffff;
-    padding: 24px 40px;
-    box-shadow: 0 16px 18px rgba(0,0,0,.12);
-    position: relative;
-    z-index: 10;
-}
+    height: 100px;
 
-/* ================= TEXTO DO HEADER ================= */
-.header-text {
-    max-width: 70%;
-}
+    z-index: 1000;
 
-.header h1 {
-    font-size: 2.6rem;
-}
-
-.header span {
-    font-size: 1.1rem;
-    opacity: 0.85;
-}
-
-/* ================= USER CONTAINER ================= */
-.user-container {
-    position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding-left: 30px;
+
+    background-color: #F15A22;
 }
 
-.logged-user-name {
-    color: white;
-    font-size: 0.9rem;
-    font-weight: 500;
+.banner img {
+    height: 100px;
+    width: 40%;
+    object-fit: contain;
 }
 
-.user-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background-color: #ffffff22;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.user-dropdown {
-    position: absolute;
-    top: 50%;
-    right: 60px; /* abre para esquerda */
-    transform: translateY(-50%);
-    background: white;
-    padding: 10px;
-    border-radius: 6px;
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.user-dropdown.active {
-    display: flex;
-}
+/* ================= USER ================= */
 .user-container {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
+
     display: flex;
     align-items: center;
     gap: 12px;
 }
-
-/* nome logado */ 
 
 .logged-user-name {
     color: white;
@@ -105,127 +53,206 @@ body {
     white-space: nowrap;
 }
 
-/* DATA CRIAÇAO */
-
-.task-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
-}
-
-.task-date {
-    font-size: 0.75rem;
-    color: #666;
-}
-
-/* CARIMBO */
-
-.task-user-badge {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 4px 10px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 20px;
-    background-color: #e6f0ff;
-    color: #1a4fb5;
-    letter-spacing: 0.5px;
-}
-
-.task-user {
-    display: block;
-    margin-top: 6px;
-    font-size: 0.75rem;
-    opacity: 0.7;
-}
-
-/* BOTÃO CIRCULAR DO USUÁRIO */
 .user-icon {
     width: 52px;
     height: 52px;
+
     border-radius: 50%;
+
     background-color: rgba(255,255,255,0.2);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     cursor: pointer;
+
     font-weight: bold;
+
     transition: 0.25s ease;
     user-select: none;
 }
 
 .user-icon:hover {
-    background-color:#F15A22;
+    background-color: #d94f1d;
     transform: scale(1.05);
 }
 
-/* DROPDOWN LATERAL */
-.user-dropdown {
-    position: absolute;
-    top: 50%;
-    right: 55px;
-    transform: translateY(-50%) translateX(20px);
-    
-    background-color:#F15A22;
-    padding: 14px;
-    border-radius: 10px;
+/* ================= LOGOUT ================= */
+.user-container button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.6);
+
+    color: #fff;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.user-container button:hover {
+    background: #fff;
+    color: #f25c05;
+    border-color: #fff;
+}
+
+.user-container button:active {
+    transform: scale(0.95);
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    position: fixed;
+    top: 100px;
+    left: 0;
+
+    width: 80px;
+    height: calc(100vh - 100px);
+
+    background: #1e293b;
+    color: white;
+
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-width: 230px;
 
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.25s ease;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    overflow-x: hidden;
+
+    transition: width 0.3s ease;
+
+    z-index: 999;
 }
 
-/* ATIVO COM ANIMAÇÃO */
-.user-dropdown.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(-50%) translateX(0);
+/* SIDEBAR ABERTA */
+.sidebar.open {
+    width: 250px;
 }
 
-/* INPUT */
-.user-dropdown input {
-    padding: 7px 10px;
-    border-radius: 6px;
-    border: none;
-    font-size: 0.9rem;
+/* TOGGLE */
+.sidebar-toggle {
     width: 100%;
-}
+    height: 60px;
 
-/* BOTÃO */
-.user-dropdown button {
-    padding: 7px;
-    background-color: white;
-    color: #009889;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.2s;
-}
-
-.user-dropdown button:hover {
-    opacity: 0.85;
-}
-/* USUÁRIO ATIVO (NOME EXIBIDO AO LADO DO ÍCONE) */
-#currentUserLabel {
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-/* ================= LAYOUT ================= */
-.page-container {
     display: flex;
-    margin-top: 118px; /* altura do banner */
-    margin-left: 80px; /* sidebar fechada */
-    transition: 0.3s;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 26px;
+
+    cursor: pointer;
+
+    color: white;
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+
+    transition: 0.2s ease;
 }
 
+.sidebar-toggle:hover {
+    background: rgba(255,255,255,0.08);
+}
 
+/* TOPO */
+.sidebar-top {
+    padding: 20px;
+
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ESCONDER TÍTULO */
+.sidebar:not(.open) .sidebar-top h2 {
+    display: none;
+}
+
+/* ================= MENU ================= */
+.sidebar-menu {
+    list-style: none;
+
+    padding: 10px;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.sidebar-menu li {
+    list-style: none;
+}
+
+/* LINK MENU */
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    width: 100%;
+
+    padding: 16px;
+
+    border-radius: 12px;
+
+    color: white;
+    text-decoration: none;
+
+    transition: all 0.25s ease;
+
+    font-size: 0.95rem;
+}
+
+/* ÍCONE */
+.menu-link i {
+    font-size: 1.2rem;
+}
+
+/* HOVER */
+.menu-link:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateX(4px);
+}
+
+/* ITEM ATIVO */
+.menu-link.active {
+    background: #F15A22;
+    color: white;
+    font-weight: 600;
+}
+
+/* SIDEBAR FECHADA */
+.sidebar:not(.open) .menu-link {
+    justify-content: center;
+}
+
+/* ESCONDER TEXO */
+.sidebar:not(.open) .menu-link span {
+    display: none;
+}
+
+/* ================= CONTEÚDO ================= */
+.page-container {
+    margin-top: 100px;
+    margin-left: 110px;
+
+    padding: 30px;
+
+    transition:
+        margin-left 0.3s ease,
+        padding 0.3s ease;
+}
+
+/* SIDEBAR ABERTA */
+.sidebar.open ~ .page-container {
+    margin-left: 280px;
+}
 
 /* ================= FORM ================= */
 .form-card {
@@ -236,26 +263,37 @@ body {
     margin-bottom: 16px;
 }
 
-input, select {
+input,
+select {
     padding: 10px;
+
     margin-right: 8px;
+
     border-radius: 6px;
     border: 1px solid #d1d5db;
+
     font-size: 0.95rem;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     outline: none;
     border-color: #F15A22;
 }
 
+/* ================= BOTÃO ================= */
 #submitBtn {
     background-color: #F15A22;
     color: white;
+
     border: none;
+
     padding: 10px 18px;
+
     border-radius: 8px;
+
     cursor: pointer;
+
     font-weight: 600;
 }
 
@@ -267,6 +305,7 @@ input:focus, select:focus {
 .task-filters {
     display: flex;
     gap: 12px;
+
     margin: 16px 0 24px 0;
 }
 
@@ -279,15 +318,35 @@ input:focus, select:focus {
     cursor: pointer;
 }
 
-.filterUser {
-	padding: lef 20px;
+/* ================= DASHBOARD ================= */
+.dashboard {
+    display: flex;
+    gap: 15px;
+
     margin-top: 20px;
+    margin-bottom: 15px;
+
+    flex-wrap: wrap;
 }
-/* ================= HEADER TAREFAS ================= */
+
+.dashboard div {
+    background: #1e293b;
+
+    padding: 10px 15px;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 0.9rem;
+}
+
+/* ================= HEADER ================= */
 .tasks-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     margin-bottom: 16px;
 }
 
@@ -301,22 +360,31 @@ input:focus, select:focus {
 .task-card {
     display: grid;
     grid-template-columns: 1fr 120px 80px;
+
     align-items: center;
+
     gap: 12px;
 
     background-color: #ffffff;
+
     border-radius: 10px;
+
     padding: 16px;
+
     margin-bottom: 12px;
 
     box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+
     border-left: 6px solid #009889;
 
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .task-card:hover {
     transform: translateY(-2px);
+
     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
 
@@ -327,18 +395,58 @@ input:focus, select:focus {
 
 .task-info p {
     font-size: 0.9rem;
+
     color: #6b7280;
+
     margin-top: 4px;
+}
+
+/* ================= META ================= */
+.task-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+.task-date {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* ================= USER BADGE ================= */
+.task-user-badge {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 4px 10px;
+
+    font-size: 0.75rem;
+    font-weight: 600;
+
+    border-radius: 20px;
+
+    background-color: #e6f0ff;
+    color: #1a4fb5;
+
+    letter-spacing: 0.5px;
 }
 
 /* ================= STATUS ================= */
 .status-badge {
     padding: 6px 12px;
+
     border-radius: 20px;
+
     font-size: 0.75rem;
     font-weight: 600;
+
     text-align: center;
+
     justify-self: center;
+
     white-space: nowrap;
 }
 
@@ -366,10 +474,16 @@ input:focus, select:focus {
 .task-actions button {
     border: none;
     background: none;
+
     cursor: pointer;
+
     font-size: 1.1rem;
+
     margin-left: 8px;
-    transition: transform 0.15s ease, opacity 0.15s ease;
+
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .task-actions button:hover {
@@ -381,21 +495,28 @@ input:focus, select:focus {
 .pagination {
     display: flex;
     align-items: center;
+
     gap: 10px;
+
     font-size: 0.85rem;
 }
 
 .pagination.inline::before {
     content: "Páginas:";
+
     color: #6b7280;
+
     font-weight: 500;
 }
 
 .pagination button {
     background: none;
     border: none;
+
     cursor: pointer;
+
     color: #6b7280;
+
     font-weight: 600;
 }
 
@@ -415,402 +536,9 @@ input:focus, select:focus {
 
 /* ================= RESPONSIVO ================= */
 @media (max-width: 900px) {
-    .page-container {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .content {
-        width: 100%;
-    }
-
-    .background-image {
-        display: none;
-    }
-}
-
-@media (max-width: 600px) {
-    .task-filters {
-        flex-direction: column;
-    }
-}
-
-/* ================= BANNER ================= */
-.banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100px;
-
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    padding-left: 30px;
-    background-color: #F15A22;
-}
-
-.banner img {
-    height: 100px;
-    width: 40%;
-    object-fit: contain;
-}
-
-/* ================= SIDEBAR ================= */
-.sidebar {
-    position: fixed;
-    top: 100px;
-    left: 0;
-
-    width: 70px;
-    height: calc(100vh - 100px);
-
-    background: #3a6d65;
-    color: white;
-
-    transition: 0.3s;
-    overflow: hidden;
-    z-index: 999;
-}
-
-.sidebar.open {
-    width: 250px;
-}
-
-/* ================= HEADER ================= */
-.sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px;
-}
-
-.sidebar-header button {
-    background: #F15A22;
-    border: none;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    padding: 4px 8px;
-}
-
-/* esconder botão quando fechado */
-.sidebar:not(.open) .sidebar-header button {
-    display: none;
-}
-
-/* ================= CONTEÚDO ================= */
-.sidebar-content {
-    padding: 10px;
-}
-
-/* título */
-.sidebar-content h3 {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin-bottom: 10px;
-    padding-left: 10px;
-}
-
-.sidebar-content {
-    padding: 20px 10px;
-    overflow-y: auto; /* 🔥 SCROLL */
-    max-height: calc(100vh - 140px); /* 🔥 evita estourar */
-}
-
-/* esconder título quando fechado */
-.sidebar:not(.open) .sidebar-content h3 {
-    display: none;
-}
-
-/* ================= LISTA ================= */
-#lista-setores {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* container setor */
-.setor-container {
-    margin-bottom: 8px;
-}
-
-/* ================= HEADER DO SETOR ================= */
-.setor-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 10px;
-    border-radius: 6px;
-
-    background: #1e293b;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.setor-header:hover {
-    background: #334155;
-}
-
-/* texto */
-.setor-header .text {
-    flex: 1;
-    margin-left: 8px;
-}
-
-/* esconder texto quando sidebar fechada */
-.sidebar:not(.open) .setor-header .text {
-    display: none;
-}
-
-/* centralizar quando fechado */
-.sidebar:not(.open) .setor-header {
-    justify-content: center;
-}
-
-/* ================= SETA ================= */
-.setor-header .arrow {
-    font-size: 12px;
-    transition: transform 0.3s;
-}
-
-/* girar seta quando aberto */
-.setor-container.open .arrow {
-    transform: rotate(90deg);
-}
-
-/* ================= USERS ================= */
-.setor-users {
-    display: none;
-    padding-left: 15px;
-    margin-top: 5px;
-}
-
-.setor-container.open .setor-users {
-    display: block;
-}
-
-/* usuário */
-.setor-users li {
-    padding: 6px;
-    font-size: 0.85rem;
-    border-radius: 4px;
-    transition: 0.2s;
-}
-
-.setor-users li:hover {
-    background: #334155;
-}
-
-/* ================= BOTÃO MENU ================= */
-.toggle-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    width: 100%;
-}
-
-.toggle-btn:hover {
-    background: rgba(255,255,255,0.1);
-}
-
-/* esconder texto botão quando fechado */
-.sidebar:not(.open) .toggle-btn .text {
-    display: none;
-}
-
-/* centralizar botão */
-.sidebar:not(.open) .toggle-btn {
-    justify-content: center;
-}
-
-/* buscador setor */ 
-
-#searchSetor {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-}
-
-/* ====== DASHBOARDS / TOTAL / PENDENTS/ EM ANDAMENTOS / CONCLUIDAS===== */
-
-.dashboard {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px; 
-    margin-bottom: 15px;
-}
-
-.dashboard div {
-    background: #1e293b;
-    padding: 10px 15px;
-    border-radius: 8px;
-    color: white;
-    font-size: 0.9rem;
-}
-
-/* logout */ 
-
-.user-container button {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.6);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    margin-left: 10px;
-
-    transition: all 0.2s ease;
-}
-
-/* hover elegante */
-.user-container button:hover {
-    background: #fff;
-    color: #f25c05;
-    border-color: #fff;
-}
-
-/* clique */
-.user-container button:active {
-    transform: scale(0.95);
-}
-
-.user-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* setores visual */
-.sector-header {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    padding: 6px;
-    font-weight: bold;
-}
-
-.sector-header:hover {
-    background-color: rgba(255,255,255,0.1);
-}
-
-.sector-icon {
-    margin-right: 8px;
-}
-
-.sector-users {
-    padding-left: 20px;
-}
-
-.user-item {
-    font-size: 14px;
-    margin: 4px 0;
-}
-
-/* ===================================================== */
-/* 🚀 NOVA SIDEBAR (PLATAFORMA) */
-/* ===================================================== */
-
-.sidebar {
-    position: fixed;
-    top: 100px;
-    left: 0;
-
-    width: 220px;
-    height: calc(100vh - 100px);
-
-    background: #1e293b;
-    color: white;
-
-    display: flex;
-    flex-direction: column;
-
-    transition: 0.3s;
-    z-index: 999;
-}
-
-/* TOPO */
-.sidebar-top {
-    padding: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-/* MENU */
-.sidebar-menu {
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-/* ITEM */
-.sidebar-menu li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 12px;
-    border-radius: 10px;
-
-    cursor: pointer;
-    transition: 0.25s ease;
-
-    font-size: 0.95rem;
-}
-
-/* ÍCONE */
-.sidebar-menu li i {
-    font-size: 1.2rem;
-}
-
-/* HOVER */
-.sidebar-menu li:hover {
-    background: #334155;
-    transform: translateX(4px);
-}
-
-/* ATIVO */
-.sidebar-menu li.active {
-    background: #F15A22;
-    color: white;
-    font-weight: 600;
-}
-
-/* ===================================================== */
-/* AJUSTE DO CONTEÚDO (IMPORTANTE) */
-/* ===================================================== */
-
-.page-container {
-    margin-left: 220px; /*  agora acompanha nova sidebar */
-}
-
-/* ===================================================== */
-/*  RESPONSIVO */
-/* ===================================================== */
-
-@media (max-width: 900px) {
 
     .sidebar {
         width: 70px;
-    }
-
-    .sidebar-menu li span {
-        display: none;
     }
 
     .sidebar-top {
@@ -819,6 +547,40 @@ input:focus, select:focus {
     }
 
     .page-container {
-        margin-left: 70px;
+        margin-left: 90px;
+        padding: 20px;
+    }
+
+    .menu-link span {
+        display: none;
+    }
+
+    .menu-link {
+        justify-content: center;
+    }
+
+    .task-card {
+        grid-template-columns: 1fr;
+    }
+
+    .tasks-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .task-filters {
+        flex-direction: column;
+    }
+
+    .dashboard {
+        flex-direction: column;
+    }
+
+    .banner img {
+        width: 60%;
     }
 }

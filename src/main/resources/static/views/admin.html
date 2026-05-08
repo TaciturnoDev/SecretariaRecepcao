@@ -15,7 +15,7 @@
 <body>
 
 <!-- ===================================================== -->
-<!-- 🔶 BANNER (IGUAL INDEX) -->
+<!--  BANNER  -->
 <!-- ===================================================== -->
 <div class="banner">
 
@@ -34,53 +34,68 @@
 </div>
 
 <!-- ===================================================== -->
-<!-- 🔷 SIDEBAR (IGUAL INDEX) -->
+<!-- SIDEBAR  -->
 <!-- ===================================================== -->
 <div id="sidebar" class="sidebar">
 
-    <div class="sidebar-top">
-        <h2>Menu</h2>
-    </div>
+	<div class="sidebar-toggle" onclick="toggleSidebar()">
+	    ☰
+	</div>
+	
+	
+	<div class="sidebar-top">
+	    <h2>Menu</h2>
+	</div>
 
-    <ul class="sidebar-menu">
+	<ul class="sidebar-menu">
 
-        <li onclick="goTo('tasks')">
-            <i>📋</i>
-            <span>Tarefas</span>
-        </li>
+	    <li>
+	        <a href="/views/index.html" class="menu-link">
+	            <i>📋</i>
+	            <span>Tarefas</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('setores')">
-            <i>🏢</i>
-            <span>Setores</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>🏢</i>
+	            <span>Setores</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('eventos')">
-            <i>📅</i>
-            <span>Eventos</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>📅</i>
+	            <span>Eventos</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('dashboard')">
-            <i>📊</i>
-            <span>Dashboard</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>📊</i>
+	            <span>Dashboard</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('admin')">
-            <i>🛡️</i>
-            <span>Super Admin</span>
-        </li>
+	    <li>
+	        <a href="/views/admin.html" class="menu-link active">
+	            <i>🛡️</i>
+	            <span>Super Admin</span>
+	        </a>
+	    </li>
 
-    </ul>
+	</ul>
 
-</div>
+	</div>
 
 <!-- ===================================================== -->
-<!-- 🧱 CONTEÚDO (ÚNICA PARTE QUE MUDA) -->
+<!--  CONTEÚDO  -->
 <!-- ===================================================== -->
 <div class="page-container">
 
     <main class="content">
 
-        <h2>Painel SuperAdmin</h2>
+        <h2>Painel de Administração</h2>
 
         <hr>
 
@@ -126,36 +141,7 @@
 <script src="/js/app.js"></script>
 <script src="/js/admin.js"></script>
 
-<!-- NAVEGAÇÃO -->
-<script>
-function goTo(section) {
 
-    if (section === "admin") {
-        window.location.href = "/views/admin.html";
-        return;
-    }
-
-    if (section === "tasks") {
-        window.location.href = "/views/index.html";
-        return;
-    }
-
-    if (section === "eventos") {
-        alert("Eventos em desenvolvimento");
-        return;
-    }
-
-    if (section === "dashboard") {
-        alert("Dashboard em desenvolvimento");
-        return;
-    }
-
-    if (section === "setores") {
-        alert("Setores em desenvolvimento");
-        return;
-    }
-}
-</script>
 
 </body>
 </html>

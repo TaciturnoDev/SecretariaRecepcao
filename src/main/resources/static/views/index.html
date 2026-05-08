@@ -35,45 +35,58 @@
 
 
 <!-- ===================================================== -->
-<!-- 🔷 SIDEBAR -->
+<!--  SIDEBAR -->
 <!-- ===================================================== -->
 <div id="sidebar" class="sidebar">
 
+	<div class="sidebar-toggle" onclick="toggleSidebar()">
+	    ☰
+	</div>
+	
     <div class="sidebar-top">
         <h2>Menu</h2>
     </div>
 
-    <ul class="sidebar-menu">
+	<ul class="sidebar-menu">
 
-        <li class="active" onclick="goTo('tasks')">
-            <i>📋</i>
-            <span>Tarefas</span>
-        </li>
+	    <li>
+	        <a href="/views/index.html" class="menu-link active">
+	            <i>📋</i>
+	            <span>Tarefas</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('setores')">
-            <i>🏢</i>
-            <span>Setores</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>🏢</i>
+	            <span>Setores</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('eventos')">
-            <i>📅</i>
-            <span>Eventos</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>📅</i>
+	            <span>Eventos</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('dashboard')">
-            <i>📊</i>
-            <span>Dashboard</span>
-        </li>
+	    <li>
+	        <a href="#" class="menu-link">
+	            <i>📊</i>
+	            <span>Dashboard</span>
+	        </a>
+	    </li>
 
-        <li onclick="goTo('admin')">
-            <i>🛡️</i>
-            <span>Super Admin</span>
-        </li>
+	    <li>
+	        <a href="/views/admin.html" class="menu-link">
+	            <i>🛡️</i>
+	            <span>Super Admin</span>
+	        </a>
+	    </li>
 
-    </ul>
+	</ul>
 
 </div>
-
 
 <!-- ===================================================== -->
 <!-- 🧱 CONTEÚDO -->
@@ -154,35 +167,6 @@
 <!-- ===================================================== -->
 <script src="/js/app.js"></script>
 
-<script>
-function goTo(section) {
-
-    if (section === "admin") {
-        window.location.href = "/views/admin.html";
-        return;
-    }
-
-    if (section === "tasks") {
-        window.location.href = "/views/index.html";
-        return;
-    }
-
-    if (section === "eventos") {
-        alert("Eventos em desenvolvimento");
-        return;
-    }
-
-    if (section === "dashboard") {
-        alert("Dashboard em desenvolvimento");
-        return;
-    }
-
-    if (section === "setores") {
-        alert("Setores será integrado aqui");
-        return;
-    }
-}
-</script>
 
 </body>
 </html>
