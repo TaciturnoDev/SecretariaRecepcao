@@ -7,7 +7,7 @@ let filteredTasks = [];
 let currentPage = 1;
 let editingTaskId = null;
 
-let sectors = [];
+/*let sectors = [];*/
 
 const ITEMS_PER_PAGE = 6;
 
@@ -80,7 +80,7 @@ async function createTask() {
             status
         };
 
-        // 🔥 TRATAMENTO CORRETO DE SETOR
+        //  TRATAMENTO CORRETO DE SETOR
         if (loggedUser.role === "SUPERADMIN") {
 
             const selectedSector = document.getElementById("sectorSelect")?.value;
@@ -392,7 +392,7 @@ async function carregarTarefas() {
 }
 
 /* ================= CARREGAR SETORES ================= */
-async function carregarSetores() {
+/*async function carregarSetores() {
     try {
         const response = await fetch("/sectors/with-users"); // endpoint sectores corretos
 
@@ -407,10 +407,10 @@ async function carregarSetores() {
     } catch (e) {
         console.error("Erro ao carregar setores:", e);
     }
-}
+}*/
 /* ============== SETORES RENDERIZAR ====== */
 
-function renderSetores() {
+/*function renderSetores() {
 
     const list = document.getElementById("lista-setores");
     if (!list) return;
@@ -435,7 +435,7 @@ function renderSetores() {
         usersList.className = "sector-users";
         usersList.style.display = "none";
 
-        // 🔥 CORREÇÃO AQUI (compatível com qualquer nome vindo do backend)
+        //  CORREÇÃO AQUI (compatível com qualquer nome vindo do backend)
         const users =
             sector.users ||
             sector.userList ||
@@ -466,9 +466,9 @@ function renderSetores() {
         li.appendChild(usersList);
         list.appendChild(li);
     });
-}
+}*/
 /* ================= INIT ================= */
-document.addEventListener("DOMContentLoaded", () => {
+/*document.addEventListener("DOMContentLoaded", () => {
 
     carregarUsuarioLogado();
     carregarTarefas();
@@ -476,5 +476,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("filterUser")
         ?.addEventListener("change", aplicarFiltros);
-});
+});*/
 
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    carregarUsuarioLogado();
+
+    // ================= TELA DE TAREFAS =================
+
+    if (document.getElementById("taskList")) {
+
+        carregarTarefas();
+
+        document.getElementById("filterUser")
+            ?.addEventListener("change", aplicarFiltros);
+    }
+
+});
