@@ -85,24 +85,79 @@ function renderSetores() {
                 <div class="sector-line">
                     <span>Equipe</span>
                     <strong>
-                        ${
-                            users.length > 0
-                                ? users.map(u => u.name).join(", ")
-                                : "—"
-                        }
-                    </strong>
+					${users.length} membros
+					</strong>
                 </div>
 
             </div>
 
-            <button class="manage-btn">
-                Gerenciar
-            </button>
+			<button class="manage-btn">
+			    Gerenciar
+			</button>
+
+			<div class="sector-manage-panel">
+
+			    <h4 class="manage-title">
+			        Usuários do setor
+			    </h4>
+
+			    ${
+			        users.length > 0
+
+			        ? users.map(user => `
+
+			            <div class="sector-user-row">
+
+			                <div class="sector-user-left">
+
+			                    <div class="user-status online"></div>
+
+			                    <span class="sector-user-name">
+			                        ${user.name}
+			                    </span>
+
+			                </div>
+
+			                <div class="sector-user-actions">
+
+			                    <button class="chat-btn">
+			                        Conversar
+			                    </button>
+
+			                    <button class="task-btn">
+			                        Solicitar tarefa
+			                    </button>
+
+			                </div>
+
+			            </div>
+
+			        `).join("")
+
+			        : `
+
+			            <div class="empty-users">
+			                Nenhum usuário neste setor.
+			            </div>
+
+			        `
+			    }
+
+			</div>
 
         `;
 
         grid.appendChild(card);
 
+		const manageBtn = card.querySelector(".manage-btn");
+
+		const panel = card.querySelector(".sector-manage-panel");
+
+		manageBtn.addEventListener("click", () => {
+
+		    panel.classList.toggle("open");
+
+		});
     });
 
 }

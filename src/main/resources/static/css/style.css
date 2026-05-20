@@ -855,4 +855,214 @@ select:focus {
     .sector-grid {
         grid-template-columns: 1fr;
     }
-}}
+}
+
+/* ===================================================== */
+/* GERENCIAR SETOR */
+/* ===================================================== */
+
+.sector-manage-panel {
+
+    margin-top: 20px;
+
+    border-top: 1px solid #e2e8f0;
+
+    padding-top: 20px;
+
+    display: none !important;
+}
+
+.sector-manage-panel.open {
+
+    display: flex !important;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+/* ================= TÍTULO ================= */
+
+.manage-title {
+
+    font-size: 0.95rem;
+
+    color: #64748b;
+
+    margin-bottom: 4px;
+
+    font-weight: 600;
+}
+
+/* ================= LINHA USUÁRIO ================= */
+
+.sector-user-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 14px;
+
+    padding: 14px 16px;
+
+    transition: 0.2s ease;
+}
+
+.sector-user-row:hover {
+
+    background: #f1f5f9;
+}
+
+/* ================= ESQUERDA ================= */
+
+.sector-user-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+/* ================= STATUS ================= */
+
+.user-status {
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+}
+
+.user-status.online {
+
+    background: #22c55e;
+
+    box-shadow: 0 0 8px rgba(34,197,94,0.4);
+}
+
+.user-status.offline {
+
+    background: #94a3b8;
+}
+
+/* ================= NOME ================= */
+
+.sector-user-name {
+
+    color: #1e293b;
+
+    font-weight: 600;
+
+    font-size: 0.95rem;
+}
+
+/* ================= AÇÕES ================= */
+
+.sector-user-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+/* ================= BOTÕES ================= */
+
+.chat-btn,
+.task-btn {
+
+    border: none;
+
+    padding: 8px 12px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+/* CHAT */
+
+.chat-btn {
+
+    background: #eff6ff;
+
+    color: #2563eb;
+}
+
+.chat-btn:hover {
+
+    background: #dbeafe;
+
+    transform: translateY(-1px);
+}
+
+/* TAREFA */
+
+.task-btn {
+
+    background: #fff7ed;
+
+    color: #ea580c;
+}
+
+.task-btn:hover {
+
+    background: #fed7aa;
+
+    transform: translateY(-1px);
+}
+
+/* ================= VAZIO ================= */
+
+.empty-users {
+
+    color: #94a3b8;
+
+    font-size: 0.9rem;
+
+    padding: 10px 0;
+}
+
+/* ================= RESPONSIVO ================= */
+
+@media (max-width: 768px) {
+
+    .sector-user-row {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .sector-user-actions {
+
+        width: 100%;
+    }
+
+    .chat-btn,
+    .task-btn {
+
+        flex: 1;
+    }
+}
