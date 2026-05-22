@@ -258,7 +258,7 @@ function renderTasks() {
 
         const li = document.createElement("li");
 
-        li.className = "task-card";
+        li.className = `task-card ${getPriorityClass(task.priority)}`;
 
         li.innerHTML = `
 
@@ -452,6 +452,20 @@ function getPriorityLabel(priority) {
     }
 
     return "Não definida";
+}
+
+/* ================= PRIORITY CLASS ================= */
+function getPriorityClass(priority) {
+
+    if (priority === "HIGH") {
+        return "priority-high";
+    }
+
+    if (priority === "URGENT") {
+        return "priority-urgent";
+    }
+
+    return "priority-normal";
 }
 
 /* ================= DATA ================= */
