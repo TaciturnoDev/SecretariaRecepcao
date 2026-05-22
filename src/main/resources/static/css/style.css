@@ -1066,3 +1066,42 @@ select:focus {
         flex: 1;
     }
 }
+
+/* ========== descrição ========= */
+#description {
+    width: 220px;
+    height: 48px;
+
+    padding: 12px;
+
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-family: inherit;
+
+    background: #fff;
+    color: #333;
+
+    resize: none;
+    overflow: hidden;
+
+    outline: none;
+
+    transition: 0.2s ease;
+
+    box-sizing: border-box;
+
+    vertical-align: middle;
+}
+
+/* EFEITO AO CLICAR */
+#description:focus {
+    border-color: #ff5b1f;
+
+    box-shadow: 0 0 0 3px rgba(255, 91, 31, 0.15);
+}
+
+#description::-webkit-scrollbar {
+    display: none;
+}

@@ -21,7 +21,7 @@ public class TaskService {
     private final SectorService sectorService;
 
     /* ===================================================== */
-    /* 📝 CRIAR TAREFA                                       */
+    /*  CRIAR TAREFA                                        */
     /* ===================================================== */
     public TaskResponseDTO create(TaskRequestDTO dto, String login) {
 
@@ -49,8 +49,18 @@ public class TaskService {
         Task task = Task.builder()
                 .title(dto.title())
                 .description(dto.description())
-                .status(dto.status() != null ? dto.status() : TaskStatus.PENDING)
-                .user(user)
+                .status(
+                        dto.status() != null
+                                ? dto.status()
+                                : TaskStatus.PENDING
+                )
+                .priority(
+                        dto.priority() != null
+                                ? dto.priority()
+                                : TaskPriority.MEDIUM
+                )
+                .createdBy(user)
+                .assignedTo(user)
                 .sector(sector)
                 .build();
 
@@ -60,7 +70,7 @@ public class TaskService {
     }
 
     /* ===================================================== */
-    /* 📋 LISTAR TAREFAS                                     */
+    /*  LISTAR TAREFAS                                      */
     /* ===================================================== */
     public Page<TaskResponseDTO> findAll(
             Long userId,
@@ -73,33 +83,54 @@ public class TaskService {
 
         Page<Task> page;
 
-        // 🔥 SUPERADMIN vê tudo
+        // SUPERADMIN vê tudo
         if (user.getRole() == Role.SUPERADMIN) {
 
             if (userId != null && status != null) {
-                page = taskRepository.findByUserIdAndStatus(userId, status, pageable);
+
+                page = taskRepository.findByAssignedToIdAndStatus(
+                        userId,
+                        status,
+                        pageable
+                );
+
             } else if (userId != null) {
-                page = taskRepository.findByUserId(userId, pageable);
+
+                page = taskRepository.findByAssignedToId(
+                        userId,
+                        pageable
+                );
+
             } else if (status != null) {
-                page = taskRepository.findByStatus(status, pageable);
+
+                page = taskRepository.findByStatus(
+                        status,
+                        pageable
+                );
+
             } else {
+
                 page = taskRepository.findAll(pageable);
             }
 
         } else {
 
-            // 🚨 proteção extra
+            // proteção extra
             if (user.getSector() == null) {
                 throw new BusinessRuleException("Usuário sem setor.");
             }
 
-            page = taskRepository.findBySectorId(user.getSector().getId(), pageable);
+            page = taskRepository.findBySectorId(
+                    user.getSector().getId(),
+                    pageable
+            );
         }
 
         return page.map(this::mapToResponse);
     }
+
     /* ===================================================== */
-    /* ✏️ ATUALIZAR TAREFA                                   */
+    /*  ATUALIZAR TAREFA                                    */
     /* ===================================================== */
     public TaskResponseDTO update(Long id, TaskRequestDTO dto, String login) {
 
@@ -110,8 +141,9 @@ public class TaskService {
 
         User user = userService.findByLogin(login);
 
-        // 🔥 SUPERADMIN pode tudo
+        // SUPERADMIN pode tudo
         if (user.getRole() == Role.SUPERADMIN) {
+
             task.setTitle(dto.title());
             task.setDescription(dto.description());
 
@@ -119,16 +151,22 @@ public class TaskService {
                 task.setStatus(dto.status());
             }
 
+            if (dto.priority() != null) {
+                task.setPriority(dto.priority());
+            }
+
             return mapToResponse(taskRepository.save(task));
         }
 
-        // 🚨 proteção extra
+        // proteção extra
         if (user.getSector() == null) {
             throw new BusinessRuleException("Usuário sem setor.");
         }
 
         if (!task.getSector().getId().equals(user.getSector().getId())) {
-            throw new BusinessRuleException("Você não pode editar tarefas de outro setor.");
+            throw new BusinessRuleException(
+                    "Você não pode editar tarefas de outro setor."
+            );
         }
 
         task.setTitle(dto.title());
@@ -138,11 +176,15 @@ public class TaskService {
             task.setStatus(dto.status());
         }
 
+        if (dto.priority() != null) {
+            task.setPriority(dto.priority());
+        }
+
         return mapToResponse(taskRepository.save(task));
     }
 
     /* ===================================================== */
-    /* 🗑️ DELETAR TAREFA                                    */
+    /*  DELETAR TAREFA                                      */
     /* ===================================================== */
     public void delete(Long id, String login) {
 
@@ -153,37 +195,48 @@ public class TaskService {
 
         User user = userService.findByLogin(login);
 
-        // 🔥 SUPERADMIN pode tudo
+        // SUPERADMIN pode tudo
         if (user.getRole() == Role.SUPERADMIN) {
             taskRepository.delete(task);
             return;
         }
 
-        // 🚨 proteção extra
+        // proteção extra
         if (user.getSector() == null) {
             throw new BusinessRuleException("Usuário sem setor.");
         }
 
         if (!task.getSector().getId().equals(user.getSector().getId())) {
-            throw new BusinessRuleException("Você não pode deletar tarefas de outro setor.");
+            throw new BusinessRuleException(
+                    "Você não pode deletar tarefas de outro setor."
+            );
         }
 
         taskRepository.delete(task);
     }
 
     /* ===================================================== */
-    /* 🔄 MAPPER                                             */
+    /*  MAPPER                                              */
     /* ===================================================== */
     private TaskResponseDTO mapToResponse(Task task) {
+
         return new TaskResponseDTO(
+
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
+
                 task.getStatus(),
+                task.getPriority(),
+
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
-                task.getUser().getId(),
-                task.getUser().getName()
+
+                task.getAssignedTo().getId(),
+                task.getAssignedTo().getName(),
+
+                task.getCreatedBy().getId(),
+                task.getCreatedBy().getName()
         );
     }
 }

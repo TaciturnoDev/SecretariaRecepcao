@@ -11,20 +11,19 @@ import com.math.taskmanager.entity.TaskStatus;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    Optional<Task> findByIdAndUserId(Long id, Long userId);
+    Optional<Task> findByIdAndAssignedToId(Long id, Long assignedToId);
 
     Page<Task> findAll(Pageable pageable);
 
     Page<Task> findByStatus(TaskStatus status, Pageable pageable);
 
-    Page<Task> findByUserId(Long userId, Pageable pageable);
+    Page<Task> findByAssignedToId(Long assignedToId, Pageable pageable);
 
-    Page<Task> findByUserIdAndStatus(
-            Long userId,
+    Page<Task> findByAssignedToIdAndStatus(
+            Long assignedToId,
             TaskStatus status,
             Pageable pageable
     );
 
-    // 🔥 CORRETO
     Page<Task> findBySectorId(Long sectorId, Pageable pageable);
 }

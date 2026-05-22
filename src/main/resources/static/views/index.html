@@ -15,7 +15,7 @@
 <body>
 
 <!-- ===================================================== -->
-<!-- 🔶 BANNER / TOPO -->
+<!--  BANNER / TOPO -->
 <!-- ===================================================== -->
 <div class="banner">
 
@@ -99,7 +99,12 @@
             <h2>Nova Tarefa</h2>
 
             <input id="title" placeholder="Título">
-            <input id="description" placeholder="Descrição">
+			<textarea
+			    id="description"
+			    placeholder="Descrição"
+			    maxlength="1000"
+				rows="1"
+			></textarea>
 
             <select id="status">
                 <option value="PENDING">Pendente</option>
@@ -107,6 +112,16 @@
                 <option value="COMPLETED">Concluída</option>
             </select>
 
+			
+			<!-- ================= PRIORIDADE ================= -->
+			  <select id="priority">
+			     <option value="LOW">Pequena</option>
+	             <option value="MEDIUM" selected>Média</option>
+			     <option value="HIGH">Alta</option>
+				 <option value="URGENT">Urgente</option>
+               </select>
+								  
+								  
             <button id="submitBtn" onclick="createTask()">Criar</button>
         </div>
 
@@ -130,12 +145,18 @@
             <select id="sectorSelect" onchange="aplicarFiltros()" style="display:none;">
                 <option value="ALL">Todos os setores</option>
             </select>
+			
+			
 
         </div>
 
+		
+		
         <select id="filterUser" onchange="aplicarFiltros()">
             <option value="ALL">Todos os usuários</option>
         </select>
+		
+	
 
         <div id="loading" class="loading" style="display:none;">
             Carregando tarefas...
@@ -148,6 +169,8 @@
             <div>Concluídas: <span id="doneTasks"></span></div>
         </div>
 
+		
+		<!-- ============ TAREFAS =================-->
         <div class="tasks-header">
             <h2>Tarefas</h2>
             <div id="paginationTop" class="pagination inline"></div>

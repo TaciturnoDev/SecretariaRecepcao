@@ -122,15 +122,24 @@ public class AdminService {
     /*  MAPPER TASK → DTO                                  */
     /* ===================================================== */
     private TaskResponseDTO mapToResponse(Task task) {
+
         return new TaskResponseDTO(
+
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
+
                 task.getStatus(),
+                task.getPriority(),
+
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
-                task.getUser().getId(),
-                task.getUser().getName()
+
+                task.getAssignedTo().getId(),
+                task.getAssignedTo().getName(),
+
+                task.getCreatedBy().getId(),
+                task.getCreatedBy().getName()
         );
     }
 }

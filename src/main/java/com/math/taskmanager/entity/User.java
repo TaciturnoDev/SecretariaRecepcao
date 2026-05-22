@@ -21,8 +21,12 @@ public class User {
     private Long id;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Task> tasks;
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
+    private List<Task> assignedTasks;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
+    private List<Task> createdTasks;
 
     @Column(nullable = false)
     private String name;

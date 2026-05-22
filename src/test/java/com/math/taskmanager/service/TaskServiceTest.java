@@ -33,7 +33,7 @@ class TaskServiceTest {
     private TaskService taskService;
 
     @Test
-    void deveCriarTarefaComSucesso() {
+    void shouldCreateTaskSuccessfully() {
 
         String login = "admin";
 
@@ -50,23 +50,28 @@ class TaskServiceTest {
         user.setSector(sector);
         user.setRole(Role.USER);
 
-        // ===== TASK =====
-        Task task = new Task();
-        task.setId(1L);
-        task.setTitle("Teste");
-        task.setDescription("Descrição");
-        task.setStatus(TaskStatus.PENDING);
-        task.setCreatedAt(LocalDateTime.now());
-        task.setUser(user);
-        task.setSector(sector);
-
-        // ⚠️ IMPORTANTE: se seu DTO tem sectorId
+        // ===== DTO =====
         TaskRequestDTO dto = new TaskRequestDTO(
-        	    "Teste",
-        	    "Descrição",
-        	    null,   // status
-        	    null    // sectorId
-        	);
+                "Teste",
+                "Descrição teste",
+                TaskStatus.PENDING,
+                TaskPriority.MEDIUM,
+                1L
+        );
+
+        // ===== TASK =====
+        Task task = Task.builder()
+                .id(1L)
+                .title("Teste")
+                .description("Descrição teste")
+                .status(TaskStatus.PENDING)
+                .priority(TaskPriority.MEDIUM)
+                .createdBy(user)
+                .assignedTo(user)
+                .sector(sector)
+                .build();
+
+        task.setCreatedAt(LocalDateTime.now());
 
         when(userService.findByLogin(login)).thenReturn(user);
         when(taskRepository.save(any(Task.class))).thenReturn(task);
@@ -74,14 +79,20 @@ class TaskServiceTest {
         TaskResponseDTO response = taskService.create(dto, login);
 
         assertNotNull(response);
+
         assertEquals("Teste", response.title());
         assertEquals(TaskStatus.PENDING, response.status());
-        assertEquals(1L, response.userId());
-        assertEquals("Marcos", response.userName());
+        assertEquals(TaskPriority.MEDIUM, response.priority());
+
+        assertEquals(1L, response.assignedToId());
+        assertEquals("Marcos", response.assignedToName());
+
+        assertEquals(1L, response.createdById());
+        assertEquals("Marcos", response.createdByName());
     }
 
     @Test
-    void deveLancarErroQuandoUsuarioSemSetor() {
+    void shouldThrowErrorWhenUserHasNoSector() {
 
         String login = "admin";
 
@@ -90,11 +101,12 @@ class TaskServiceTest {
         user.setRole(Role.USER);
 
         TaskRequestDTO dto = new TaskRequestDTO(
-        	    "Teste",
-        	    "Descrição",
-        	    null,   // status
-        	    null    // sectorId
-        	);
+                "Teste",
+                "Descrição",
+                null,
+                null,
+                null
+        );
 
         when(userService.findByLogin(login)).thenReturn(user);
 

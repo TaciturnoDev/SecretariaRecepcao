@@ -1,17 +1,20 @@
 package com.math.taskmanager.dto;
 
+import com.math.taskmanager.entity.TaskPriority;
 import com.math.taskmanager.entity.TaskStatus;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record TaskRequestDTO(
 
-        @NotBlank(message = "Título é obrigatório")
-        String title,
+    String title,
 
-        String description,
+    @Size(max = 1000, message = "Descrição deve ter no máximo 1000 caracteres")
+    String description,
 
-        TaskStatus status,
+    TaskStatus status,
 
-        Long sectorId
+    TaskPriority priority,
+
+    Long sectorId
 
 ) {}
