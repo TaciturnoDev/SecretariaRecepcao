@@ -256,9 +256,11 @@ function renderTasks() {
 
     pageItems.forEach(task => {
 
-        const li = document.createElement("li");
+		const li = document.createElement("li");
 
-        li.className = `task-card ${getPriorityClass(task.priority)}`;
+		li.id = `task-${task.id}`;
+
+		li.className = `task-card ${getPriorityClass(task.priority)}`;
 
         li.innerHTML = `
 
@@ -266,7 +268,9 @@ function renderTasks() {
 
                 <strong>${task.title}</strong>
 
-                <p>${task.description || ""}</p>
+				<p class="task-description">
+				    ${task.description || ""}
+				</p>
 
                 <div class="task-meta">
 
@@ -293,6 +297,38 @@ function renderTasks() {
                     </div>
 
                 </div>
+				
+				
+				<div class="task-expanded-content">
+
+				    <hr>
+
+				    <div class="expanded-section">
+				        <strong>Descrição Completa:</strong>
+
+				        <p>
+				            ${task.description || "Sem descrição"}
+				        </p>
+				    </div>
+
+				    <div class="expanded-section">
+				        <strong>Criado por:</strong>
+				        ${task.createdByName || "-"}
+				    </div>
+
+				    <div class="expanded-section">
+				        <strong>Responsável:</strong>
+				        ${task.assignedToName || "-"}
+				    </div>
+
+				    <div class="expanded-section">
+				        <strong>Prioridade:</strong>
+				        ${getPriorityLabel(task.priority)}
+				    </div>
+
+				</div>
+				
+				
             </div>
 
             <div class="status-badge ${getStatusClass(task.status)}">
@@ -300,7 +336,11 @@ function renderTasks() {
             </div>
 
             <div class="task-actions">
+			
+			    <button onclick="expandTask(${task.id})">👁️</button>
+			
                 <button onclick="editTask(${task.id})">✏️</button>
+				
                 <button onclick="deleteTask(${task.id})">❌</button>
             </div>
         `;
@@ -604,3 +644,13 @@ document.addEventListener("DOMContentLoaded", () => {
             ?.addEventListener("change", aplicarFiltros);
     }
 });
+
+/* ================= EXPANDIR TAREFA ================= */
+function expandTask(id) {
+
+    const card = document.getElementById(`task-${id}`);
+
+    if (!card) return;
+
+    card.classList.toggle("expanded");
+}

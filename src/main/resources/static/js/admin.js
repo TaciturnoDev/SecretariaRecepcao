@@ -45,7 +45,7 @@ async function loadTasks() {
 	        <td>${task.id}</td>
 	        <td>${task.title}</td>
 	        <td>${task.status}</td>
-	        <td>${task.userName || "-"}</td>
+	        <td>${task.createdByName || "-"}</td>
 	    `;
 
 	    tbody.appendChild(tr);
