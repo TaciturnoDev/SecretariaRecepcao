@@ -223,6 +223,23 @@ function aplicarFiltros() {
     render();
 }
 
+/* ================= DASHBOARD ================= */
+function updateDashboard() {
+
+    document.getElementById("totalTasks").innerText =
+        tasks.length;
+
+    document.getElementById("pendingTasks").innerText =
+        tasks.filter(t => t.status === "PENDING").length;
+
+    document.getElementById("progressTasks").innerText =
+        tasks.filter(t => t.status === "IN_PROGRESS").length;
+
+    document.getElementById("doneTasks").innerText =
+        tasks.filter(t => t.status === "COMPLETED").length;
+}
+
+
 /* ================= RENDER ================= */
 function render() {
 
@@ -612,11 +629,13 @@ async function carregarTarefas() {
                 new Date(a.createdAt)
         );
 
-        filteredTasks = [...tasks];
+		filteredTasks = [...tasks];
 
-        updateUserFilterOptions();
+		updateDashboard();
 
-        aplicarFiltros();
+		updateUserFilterOptions();
+
+		aplicarFiltros();
 
     } catch (e) {
 

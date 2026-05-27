@@ -1,0 +1,43 @@
+package com.math.taskmanager.service;
+
+import com.math.taskmanager.entity.Task;
+import com.math.taskmanager.entity.TaskHistory;
+import com.math.taskmanager.entity.User;
+import com.math.taskmanager.repository.TaskHistoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class TaskHistoryService {
+
+    private final TaskHistoryRepository repository;
+
+    /* ==================== REGISTRAR HISTÓRICO ===================*/
+    
+    public void register(
+            Task task,
+            User user,
+            String action
+    ) {
+
+        TaskHistory history = TaskHistory.builder()
+                .task(task)
+                .user(user)
+                .action(action)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        repository.save(history);
+    }
+
+    /* ================= LISTAR HISTÓRICO ===================== */
+   
+    public List<TaskHistory> findByTask(Long taskId) {
+
+        return repository.findByTaskIdOrderByCreatedAtDesc(taskId);
+    }
+}

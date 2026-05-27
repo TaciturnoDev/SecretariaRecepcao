@@ -32,24 +32,35 @@ async function loadUsers() {
 // CARREGAR TAREFAS
 // ==========================
 async function loadTasks() {
+
     const response = await fetch("/admin/tasks");
+
     const data = await response.json();
 
     const tbody = document.querySelector("#tasksTable tbody");
+
     tbody.innerHTML = "";
 
-	data.content.forEach(task => {
-	    const tr = document.createElement("tr");
+    data.content.forEach(task => {
 
-	    tr.innerHTML = `
-	        <td>${task.id}</td>
-	        <td>${task.title}</td>
-	        <td>${task.status}</td>
-	        <td>${task.createdByName || "-"}</td>
-	    `;
+        const tr = document.createElement("tr");
 
-	    tbody.appendChild(tr);
-	});
+        tr.innerHTML = `
+            <td>${task.id}</td>
+
+            <td>${task.title}</td>
+
+            <td>${task.status}</td>
+
+            <td>${task.createdByName || "-"}</td>
+
+            <td>${task.assignedToName || "-"}</td>
+
+            <td>${task.priority || "-"}</td>
+        `;
+
+        tbody.appendChild(tr);
+    });
 }
 
 // ==========================

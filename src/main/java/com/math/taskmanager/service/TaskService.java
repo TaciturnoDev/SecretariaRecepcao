@@ -19,10 +19,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
     private final SectorService sectorService;
+    private final TaskHistoryService taskHistoryService;
 
-    /* ===================================================== */
+   
     /*  CRIAR TAREFA                                        */
-    /* ===================================================== */
+   
     public TaskResponseDTO create(TaskRequestDTO dto, String login) {
 
         User user = userService.findByLogin(login);
@@ -66,12 +67,19 @@ public class TaskService {
 
         task = taskRepository.save(task);
 
+        /* ================= HISTÓRICO ================= */
+        taskHistoryService.register(
+                task,
+                user,
+                "Criou a tarefa"
+        );
+
         return mapToResponse(task);
     }
 
-    /* ===================================================== */
+   
     /*  LISTAR TAREFAS                                      */
-    /* ===================================================== */
+    
     public Page<TaskResponseDTO> findAll(
             Long userId,
             TaskStatus status,
@@ -129,9 +137,9 @@ public class TaskService {
         return page.map(this::mapToResponse);
     }
 
-    /* ===================================================== */
+    
     /*  ATUALIZAR TAREFA                                    */
-    /* ===================================================== */
+  
     public TaskResponseDTO update(Long id, TaskRequestDTO dto, String login) {
 
         Task task = taskRepository.findById(id)
@@ -140,6 +148,10 @@ public class TaskService {
                 );
 
         User user = userService.findByLogin(login);
+
+        /* ================= HISTÓRICO ANTIGO ================= */
+        String oldStatus = task.getStatus().name();
+        String oldPriority = task.getPriority().name();
 
         // SUPERADMIN pode tudo
         if (user.getRole() == Role.SUPERADMIN) {
@@ -155,7 +167,16 @@ public class TaskService {
                 task.setPriority(dto.priority());
             }
 
-            return mapToResponse(taskRepository.save(task));
+            Task updatedTask = taskRepository.save(task);
+
+            registerUpdateHistory(
+                    updatedTask,
+                    user,
+                    oldStatus,
+                    oldPriority
+            );
+
+            return mapToResponse(updatedTask);
         }
 
         // proteção extra
@@ -180,12 +201,21 @@ public class TaskService {
             task.setPriority(dto.priority());
         }
 
-        return mapToResponse(taskRepository.save(task));
+        Task updatedTask = taskRepository.save(task);
+
+        registerUpdateHistory(
+                updatedTask,
+                user,
+                oldStatus,
+                oldPriority
+        );
+
+        return mapToResponse(updatedTask);
     }
 
-    /* ===================================================== */
+   
     /*  DELETAR TAREFA                                      */
-    /* ===================================================== */
+   
     public void delete(Long id, String login) {
 
         Task task = taskRepository.findById(id)
@@ -197,7 +227,15 @@ public class TaskService {
 
         // SUPERADMIN pode tudo
         if (user.getRole() == Role.SUPERADMIN) {
+
+            taskHistoryService.register(
+                    task,
+                    user,
+                    "Deletou a tarefa"
+            );
+
             taskRepository.delete(task);
+
             return;
         }
 
@@ -212,12 +250,59 @@ public class TaskService {
             );
         }
 
+        taskHistoryService.register(
+                task,
+                user,
+                "Deletou a tarefa"
+        );
+
         taskRepository.delete(task);
     }
 
-    /* ===================================================== */
+ 
+    /*  HISTÓRICO UPDATE                                    */
+  
+    private void registerUpdateHistory(
+            Task task,
+            User user,
+            String oldStatus,
+            String oldPriority
+    ) {
+
+        if (!oldStatus.equals(task.getStatus().name())) {
+
+            taskHistoryService.register(
+                    task,
+                    user,
+                    "Alterou status de "
+                            + oldStatus
+                            + " para "
+                            + task.getStatus().name()
+            );
+        }
+
+        if (!oldPriority.equals(task.getPriority().name())) {
+
+            taskHistoryService.register(
+                    task,
+                    user,
+                    "Alterou prioridade de "
+                            + oldPriority
+                            + " para "
+                            + task.getPriority().name()
+            );
+        }
+
+        taskHistoryService.register(
+                task,
+                user,
+                "Atualizou a tarefa"
+        );
+    }
+
+
     /*  MAPPER                                              */
-    /* ===================================================== */
+  
     private TaskResponseDTO mapToResponse(Task task) {
 
         return new TaskResponseDTO(
