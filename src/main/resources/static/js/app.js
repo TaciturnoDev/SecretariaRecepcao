@@ -316,36 +316,6 @@ function renderTasks() {
                 </div>
 				
 				
-				<div class="task-expanded-content">
-
-				    <hr>
-
-				    <div class="expanded-section">
-				        <strong>Descrição Completa:</strong>
-
-				        <p>
-				            ${task.description || "Sem descrição"}
-				        </p>
-				    </div>
-
-				    <div class="expanded-section">
-				        <strong>Criado por:</strong>
-				        ${task.createdByName || "-"}
-				    </div>
-
-				    <div class="expanded-section">
-				        <strong>Responsável:</strong>
-				        ${task.assignedToName || "-"}
-				    </div>
-
-				    <div class="expanded-section">
-				        <strong>Prioridade:</strong>
-				        ${getPriorityLabel(task.priority)}
-				    </div>
-
-				</div>
-				
-				
             </div>
 
             <div class="status-badge ${getStatusClass(task.status)}">
@@ -354,7 +324,7 @@ function renderTasks() {
 
             <div class="task-actions">
 			
-			    <button onclick="expandTask(${task.id})">👁️</button>
+			    <button onclick="openTaskModal(${task.id})">👁️</button>
 			
                 <button onclick="editTask(${task.id})">✏️</button>
 				
@@ -664,12 +634,90 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/* ================= EXPANDIR TAREFA ================= */
-function expandTask(id) {
 
-    const card = document.getElementById(`task-${id}`);
 
-    if (!card) return;
+/* ================= MODAL TAREFA ================= */
 
-    card.classList.toggle("expanded");
+function openTaskModal(taskId) {
+
+    const task = tasks.find(t => t.id === taskId);
+
+    if (!task) return;
+
+    const overlay =
+        document.getElementById("taskModalOverlay");
+
+    const content =
+        document.getElementById("taskModalContent");
+
+    content.innerHTML = `
+
+        <h2>${task.title}</h2>
+
+        <hr>
+
+        <p>
+            <strong>Status:</strong>
+            ${getStatusLabel(task.status)}
+        </p>
+
+        <p>
+            <strong>Prioridade:</strong>
+            ${getPriorityLabel(task.priority)}
+        </p>
+
+        <p>
+            <strong>Criado por:</strong>
+            ${task.createdByName || "-"}
+        </p>
+
+        <p>
+            <strong>Responsável:</strong>
+            ${task.assignedToName || "-"}
+        </p>
+
+        <hr>
+
+        <h3>Descrição</h3>
+
+        <p>
+            ${task.description || "Sem descrição"}
+        </p>
+
+    `;
+
+    overlay.style.display = "flex";
 }
+
+/* ================= FECHAR MODAL ================= */
+
+function closeTaskModal() {
+
+    const overlay =
+        document.getElementById("taskModalOverlay");
+
+    overlay.style.display = "none";
+}
+
+/* ================= EVENTOS MODAL ================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const overlay =
+        document.getElementById("taskModalOverlay");
+
+    const closeBtn =
+        document.getElementById("closeTaskModalBtn");
+
+    /* FECHAR NO X */
+    closeBtn?.addEventListener("click", closeTaskModal);
+
+    /* FECHAR CLICANDO FORA */
+    overlay?.addEventListener("click", (e) => {
+
+        if (e.target.id === "taskModalOverlay") {
+            closeTaskModal();
+        }
+    });
+
+});

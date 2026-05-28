@@ -9,4 +9,6 @@ public interface TaskHistoryRepository
         extends JpaRepository<TaskHistory, Long> {
 
     List<TaskHistory> findByTaskIdOrderByCreatedAtDesc(Long taskId);
+    
+    void deleteByTaskId(Long taskId);
 }

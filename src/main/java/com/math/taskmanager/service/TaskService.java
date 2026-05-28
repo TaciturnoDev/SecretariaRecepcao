@@ -11,6 +11,8 @@ import com.math.taskmanager.entity.*;
 import com.math.taskmanager.exception.BusinessRuleException;
 import com.math.taskmanager.exception.ResourceNotFoundException;
 import com.math.taskmanager.repository.TaskRepository;
+import com.math.taskmanager.repository.TaskHistoryRepository;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class TaskService {
     private final UserService userService;
     private final SectorService sectorService;
     private final TaskHistoryService taskHistoryService;
+    private final TaskHistoryRepository taskHistoryRepository;
 
    
     /*  CRIAR TAREFA                                        */
