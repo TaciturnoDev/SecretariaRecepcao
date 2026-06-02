@@ -20,12 +20,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final SectorService sectorService; // 🔥 NOVO
+    private final SectorService sectorService; //  NOVO
 
     /*
-     * ==============================
+     
      * CRIAR USUÁRIO COM SETOR
-     * ==============================
+  
      */
     public User create(UserRequestDTO dto) {
 
@@ -34,18 +34,18 @@ public class UserService {
             throw new BusinessRuleException("Senha é obrigatória.");
         }
 
-        // 🔒 CPF duplicado
+        //  CPF duplicado
         userRepository.findByCpf(dto.cpf())
                 .ifPresent(existing -> {
                     throw new BusinessRuleException("CPF já cadastrado no sistema.");
                 });
 
-        // 🔒 login duplicado
+        //  login duplicado
         if (userRepository.existsByLogin(dto.login())) {
             throw new BusinessRuleException("Login já está em uso.");
         }
 
-        // 🔥 setor obrigatório
+        //  setor obrigatório
         if (dto.sectorId() == null) {
             throw new BusinessRuleException("Setor é obrigatório.");
         }
@@ -57,7 +57,7 @@ public class UserService {
                 .login(dto.login())
                 .cpf(dto.cpf())
                 .password(passwordEncoder.encode(dto.password()))
-                .sector(sector) // 🔥 vínculo com setor
+                .sector(sector) //  vínculo com setor
                 .active(true)
                 .build();
 
@@ -150,7 +150,7 @@ public class UserService {
 
     /*
      * ==============================
-     * 🔥 ALTERAR SETOR (FUTURO ADMIN)
+     *  ALTERAR SETOR (FUTURO ADMIN)
      * ==============================
      */
     public void updateSector(Long userId, Long sectorId) {

@@ -52,7 +52,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //  ESSENCIAL (isso estava faltando)
+    //  ESSENCIAL 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

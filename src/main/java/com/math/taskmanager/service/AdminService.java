@@ -15,6 +15,9 @@ import com.math.taskmanager.repository.UserRepository;
 import com.math.taskmanager.dto.AdminUserDTO;
 import com.math.taskmanager.dto.TaskResponseDTO;
 
+import java.util.List;
+import com.math.taskmanager.dto.TaskHistoryResponseDTO;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -139,7 +142,29 @@ public class AdminService {
                 task.getAssignedTo().getName(),
 
                 task.getCreatedBy().getId(),
-                task.getCreatedBy().getName()
+                task.getCreatedBy().getName(),
+
+                task.getHistory() != null
+                ? task.getHistory().stream()
+                .map(history -> new TaskHistoryResponseDTO(
+
+                        history.getId(),
+
+                        history.getAction(),
+
+                        history.getUser().getName(),
+
+                        history.getOldTitle(),
+                        history.getNewTitle(),
+
+                        history.getOldDescription(),
+                        history.getNewDescription(),
+
+                        history.getCreatedAt()
+
+                ))
+                .toList()
+                : List.of()
         );
+      }
     }
-}

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,38 +20,69 @@ public class AuthController {
     private final UserService userService;
 
     /* ===================================================== */
-    /* 🔐 USUÁRIO LOGADO                                     */
+    /* USUÁRIO LOGADO                                        */
     /* ===================================================== */
     @GetMapping("/me")
     public ResponseEntity<?> getUser(Authentication authentication) {
 
         if (authentication == null || !authentication.isAuthenticated()) {
+
             return ResponseEntity
                     .status(401)
-                    .body(Map.of("error", "Usuário não autenticado"));
+                    .body(Map.of(
+                            "error",
+                            "Usuário não autenticado"
+                    ));
         }
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "username", authentication.getName()
-                )
+        User user =
+                userService.findByLogin(authentication.getName());
+
+        Map<String, Object> response =
+                new HashMap<>();
+
+        response.put("username", user.getLogin());
+
+        response.put(
+                "role",
+                user.getRole().name()
         );
+
+        response.put(
+                "sectorId",
+                user.getSector() != null
+                        ? user.getSector().getId()
+                        : null
+        );
+
+        response.put(
+                "name",
+                user.getName()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     /* ===================================================== */
-    /* 👤 PRIMEIRO ACESSO / CRIAÇÃO DE USUÁRIO               */
+    /* PRIMEIRO ACESSO / CRIAÇÃO DE USUÁRIO                  */
     /* ===================================================== */
     @PostMapping("/first-access")
-    public ResponseEntity<?> firstAccess(@RequestBody UserRequestDTO dto) {
+    public ResponseEntity<?> firstAccess(
+            @RequestBody UserRequestDTO dto
+    ) {
 
         try {
 
-            User savedUser = userService.create(dto);
+            User savedUser =
+                    userService.create(dto);
 
             return ResponseEntity.ok(
                     Map.of(
-                            "message", "Usuário criado com sucesso",
-                            "userId", savedUser.getId()
+                            "message",
+                            "Usuário criado com sucesso",
+
+                            "userId",
+                            savedUser.getId()
                     )
             );
 
@@ -60,7 +92,8 @@ public class AuthController {
                     .badRequest()
                     .body(
                             Map.of(
-                                    "error", e.getMessage()
+                                    "error",
+                                    e.getMessage()
                             )
                     );
         }

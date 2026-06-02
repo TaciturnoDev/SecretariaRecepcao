@@ -13,6 +13,8 @@ import com.math.taskmanager.exception.ResourceNotFoundException;
 import com.math.taskmanager.repository.TaskRepository;
 import com.math.taskmanager.repository.TaskHistoryRepository;
 
+import java.util.List;
+import com.math.taskmanager.dto.TaskHistoryResponseDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +26,10 @@ public class TaskService {
     private final TaskHistoryService taskHistoryService;
     private final TaskHistoryRepository taskHistoryRepository;
 
-   
-    /*  CRIAR TAREFA                                        */
-   
+    /* ===================================================== */
+    /* CRIAR TAREFA                                          */
+    /* ===================================================== */
+
     public TaskResponseDTO create(TaskRequestDTO dto, String login) {
 
         User user = userService.findByLogin(login);
@@ -71,18 +74,26 @@ public class TaskService {
         task = taskRepository.save(task);
 
         /* ================= HISTÓRICO ================= */
+
         taskHistoryService.register(
                 task,
                 user,
-                "Criou a tarefa"
+                "Criou a tarefa",
+
+                null,
+                task.getTitle(),
+
+                null,
+                task.getDescription()
         );
 
         return mapToResponse(task);
     }
 
-   
-    /*  LISTAR TAREFAS                                      */
-    
+    /* ===================================================== */
+    /* LISTAR TAREFAS                                        */
+    /* ===================================================== */
+
     public Page<TaskResponseDTO> findAll(
             Long userId,
             TaskStatus status,
@@ -126,7 +137,6 @@ public class TaskService {
 
         } else {
 
-            // proteção extra
             if (user.getSector() == null) {
                 throw new BusinessRuleException("Usuário sem setor.");
             }
@@ -140,9 +150,10 @@ public class TaskService {
         return page.map(this::mapToResponse);
     }
 
-    
-    /*  ATUALIZAR TAREFA                                    */
-  
+    /* ===================================================== */
+    /* ATUALIZAR TAREFA                                      */
+    /* ===================================================== */
+
     public TaskResponseDTO update(Long id, TaskRequestDTO dto, String login) {
 
         Task task = taskRepository.findById(id)
@@ -152,14 +163,24 @@ public class TaskService {
 
         User user = userService.findByLogin(login);
 
-        /* ================= HISTÓRICO ANTIGO ================= */
+        /* ================= SNAPSHOT ANTIGO ================= */
+
         String oldStatus = task.getStatus().name();
+
         String oldPriority = task.getPriority().name();
 
-        // SUPERADMIN pode tudo
+        String oldTitle = task.getTitle();
+
+        String oldDescription = task.getDescription();
+
+        // =====================================================
+        // SUPERADMIN
+        // =====================================================
+
         if (user.getRole() == Role.SUPERADMIN) {
 
             task.setTitle(dto.title());
+
             task.setDescription(dto.description());
 
             if (dto.status() != null) {
@@ -176,24 +197,31 @@ public class TaskService {
                     updatedTask,
                     user,
                     oldStatus,
-                    oldPriority
+                    oldPriority,
+                    oldTitle,
+                    oldDescription
             );
 
             return mapToResponse(updatedTask);
         }
 
-        // proteção extra
+        // =====================================================
+        // USUÁRIO COMUM
+        // =====================================================
+
         if (user.getSector() == null) {
             throw new BusinessRuleException("Usuário sem setor.");
         }
 
         if (!task.getSector().getId().equals(user.getSector().getId())) {
+
             throw new BusinessRuleException(
                     "Você não pode editar tarefas de outro setor."
             );
         }
 
         task.setTitle(dto.title());
+
         task.setDescription(dto.description());
 
         if (dto.status() != null) {
@@ -210,15 +238,18 @@ public class TaskService {
                 updatedTask,
                 user,
                 oldStatus,
-                oldPriority
+                oldPriority,
+                oldTitle,
+                oldDescription
         );
 
         return mapToResponse(updatedTask);
     }
 
-   
-    /*  DELETAR TAREFA                                      */
-   
+    /* ===================================================== */
+    /* DELETAR TAREFA                                        */
+    /* ===================================================== */
+
     public void delete(Long id, String login) {
 
         Task task = taskRepository.findById(id)
@@ -234,7 +265,13 @@ public class TaskService {
             taskHistoryService.register(
                     task,
                     user,
-                    "Deletou a tarefa"
+                    "Deletou a tarefa",
+
+                    task.getTitle(),
+                    null,
+
+                    task.getDescription(),
+                    null
             );
 
             taskRepository.delete(task);
@@ -242,12 +279,12 @@ public class TaskService {
             return;
         }
 
-        // proteção extra
         if (user.getSector() == null) {
             throw new BusinessRuleException("Usuário sem setor.");
         }
 
         if (!task.getSector().getId().equals(user.getSector().getId())) {
+
             throw new BusinessRuleException(
                     "Você não pode deletar tarefas de outro setor."
             );
@@ -256,21 +293,32 @@ public class TaskService {
         taskHistoryService.register(
                 task,
                 user,
-                "Deletou a tarefa"
+                "Deletou a tarefa",
+
+                task.getTitle(),
+                null,
+
+                task.getDescription(),
+                null
         );
 
         taskRepository.delete(task);
     }
 
- 
-    /*  HISTÓRICO UPDATE                                    */
-  
+    /* ===================================================== */
+    /* HISTÓRICO UPDATE                                      */
+    /* ===================================================== */
+
     private void registerUpdateHistory(
             Task task,
             User user,
             String oldStatus,
-            String oldPriority
+            String oldPriority,
+            String oldTitle,
+            String oldDescription
     ) {
+
+        /* ================= STATUS ================= */
 
         if (!oldStatus.equals(task.getStatus().name())) {
 
@@ -280,9 +328,17 @@ public class TaskService {
                     "Alterou status de "
                             + oldStatus
                             + " para "
-                            + task.getStatus().name()
+                            + task.getStatus().name(),
+
+                    null,
+                    null,
+
+                    null,
+                    null
             );
         }
+
+        /* ================= PRIORIDADE ================= */
 
         if (!oldPriority.equals(task.getPriority().name())) {
 
@@ -292,39 +348,93 @@ public class TaskService {
                     "Alterou prioridade de "
                             + oldPriority
                             + " para "
-                            + task.getPriority().name()
+                            + task.getPriority().name(),
+
+                    null,
+                    null,
+
+                    null,
+                    null
             );
         }
 
-        taskHistoryService.register(
-                task,
-                user,
-                "Atualizou a tarefa"
-        );
+        /* ================= ALTERAÇÃO DE CONTEÚDO ================= */
+
+        boolean titleChanged =
+                oldTitle != null &&
+                !oldTitle.equals(task.getTitle());
+
+        boolean descriptionChanged =
+                oldDescription != null &&
+                !oldDescription.equals(task.getDescription());
+
+        if (titleChanged || descriptionChanged) {
+
+            taskHistoryService.register(
+                    task,
+                    user,
+                    "Atualizou a tarefa",
+
+                    oldTitle,
+                    task.getTitle(),
+
+                    oldDescription,
+                    task.getDescription()
+            );
+        }
     }
 
+    /* ===================================================== */
+    /* MAPPER                                                */
+    /* ===================================================== */
 
-    /*  MAPPER                                              */
-  
     private TaskResponseDTO mapToResponse(Task task) {
 
         return new TaskResponseDTO(
 
                 task.getId(),
+
                 task.getTitle(),
+
                 task.getDescription(),
 
                 task.getStatus(),
+
                 task.getPriority(),
 
                 task.getCreatedAt(),
+
                 task.getUpdatedAt(),
 
                 task.getAssignedTo().getId(),
+
                 task.getAssignedTo().getName(),
 
                 task.getCreatedBy().getId(),
-                task.getCreatedBy().getName()
-        );
+
+                task.getCreatedBy().getName(),
+
+                task.getHistory() != null
+                ? task.getHistory().stream()
+                .map(history -> new TaskHistoryResponseDTO(
+
+                        history.getId(),
+
+                        history.getAction(),
+
+                        history.getUser().getName(),
+
+                        history.getOldTitle(),
+                        history.getNewTitle(),
+
+                        history.getOldDescription(),
+                        history.getNewDescription(),
+
+                        history.getCreatedAt()
+
+                ))
+                .toList()
+                : List.of()
+        );        
     }
 }

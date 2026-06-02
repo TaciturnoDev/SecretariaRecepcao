@@ -22,7 +22,7 @@ public class UserController {
 
     /*
      * ==============================
-     * 🔥 CRIAR USUÁRIO COM SETOR
+     *  CRIAR USUÁRIO COM SETOR
      * ==============================
      */
     @PostMapping
@@ -95,7 +95,7 @@ public class UserController {
 
     /*
      * ==============================
-     * 🔥 SUPERADMIN - ALTERAR SETOR
+     *  SUPERADMIN - ALTERAR SETOR
      * ==============================
      */
     @PutMapping("/{id}/sector/{sectorId}")

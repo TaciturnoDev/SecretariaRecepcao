@@ -25,7 +25,7 @@ public class TaskController {
     private final TaskService taskService;
 
     /* ===================================================== */
-    /* 📝 CRIAR TAREFA                                      */
+    /*  CRIAR TAREFA                                      */
     /* ===================================================== */
     @PostMapping
     public ResponseEntity<TaskResponseDTO> create(
@@ -40,7 +40,7 @@ public class TaskController {
     }
 
     /* ===================================================== */
-    /* ✏️ ATUALIZAR TAREFA (🔥 CORREÇÃO PRINCIPAL)          */
+    /*  ATUALIZAR TAREFA         */
     /* ===================================================== */
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> update(
@@ -57,7 +57,7 @@ public class TaskController {
     }
 
     /* ===================================================== */
-    /* 📋 LISTAR TAREFAS                                    */
+    /*  LISTAR TAREFAS                                    */
     /* ===================================================== */
     @GetMapping
     public ResponseEntity<Page<TaskResponseDTO>> findAll(
@@ -78,7 +78,7 @@ public class TaskController {
     }
 
     /* ===================================================== */
-    /* 🗑️ DELETAR TAREFA                                   */
+    /*  DELETAR TAREFA                                   */
     /* ===================================================== */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(

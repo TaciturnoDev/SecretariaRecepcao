@@ -80,6 +80,8 @@ async function createTask() {
 
     if (!title) return;
 
+	let selectedSector = null;
+	
     try {
 
         const url = editingTaskId
@@ -98,25 +100,49 @@ async function createTask() {
         };
 
         // ================= SUPERADMIN =================
-        if (loggedUser.role === "SUPERADMIN") {
+		if (loggedUser.role === "SUPERADMIN") {
 
-            const selectedSector =
-                document.getElementById("sectorSelect")?.value;
+		    selectedSector =
+		        document.getElementById("taskSectorSelect")?.value;
 
-            if (!selectedSector) {
-                alert("Selecione um setor");
-                return;
-            }
+		    if (
+		        !selectedSector ||
+		        selectedSector === "" ||
+		        selectedSector === "null"
+		    ) {
+		        alert("Selecione um setor");
+		        return;
+		    }
 
-            bodyData.sectorId = Number(selectedSector);
+		    bodyData.sectorId =
+		        parseInt(selectedSector);
 
-        } else {
+		} else {
 
             if (loggedUserSectorId) {
                 bodyData.sectorId = loggedUserSectorId;
             }
         }
+        
+		/* remover linha abaixo apos erro parar */
+		console.log("Usuário logado:", loggedUser);
 
+		console.log(
+		    "Role usuário:",
+		    loggedUser?.role
+		);
+
+		console.log(
+		    "Setor selecionado:",
+		    selectedSector
+		);
+
+		console.log(
+		    "Body enviada:",
+		    bodyData
+		);
+		/* até aqui */
+		
         const response = await fetch(url, {
             method: method,
             headers: {
@@ -534,6 +560,53 @@ function updateUserFilterOptions() {
     });
 }
 
+
+/* ================= CARREGAR SELECT DE SETORES ================= */
+
+async function loadSectorFilter() {
+
+    try {
+
+        const response =
+            await fetch("/sectors");
+
+        if (!response.ok) {
+            throw new Error("Erro ao buscar setores");
+        }
+
+        const sectors = await response.json();
+
+        const select =
+            document.getElementById("taskSectorSelect");
+
+        if (!select) return;
+
+        select.innerHTML =
+            `<option value="">Selecione o setor</option>`;
+
+        sectors.forEach(sector => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = sector.id;
+
+            option.textContent = sector.name;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (e) {
+
+        console.error(
+            "Erro ao carregar setores:",
+            e
+        );
+    }
+}
+
+
 /* ================= USUÁRIO LOGADO ================= */
 async function carregarUsuarioLogado() {
 
@@ -558,7 +631,7 @@ async function carregarUsuarioLogado() {
         if (loggedUser.role === "SUPERADMIN") {
 
             const sectorSelect =
-                document.getElementById("sectorSelect");
+                document.getElementById("taskSectorSelect");
 
             if (sectorSelect) {
 
@@ -638,7 +711,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ================= MODAL TAREFA ================= */
 
-function openTaskModal(taskId) {
+async function openTaskModal(taskId) {
 
     const task = tasks.find(t => t.id === taskId);
 
@@ -649,6 +722,133 @@ function openTaskModal(taskId) {
 
     const content =
         document.getElementById("taskModalContent");
+
+    /* ================= HISTÓRICO ================= */
+
+    let historyHtml =
+        "<p>Nenhum histórico.</p>";
+
+    if (task.history && task.history.length > 0) {
+
+        historyHtml = task.history.map((item, index) => `
+
+            <div class="history-item">
+
+                <div class="history-header">
+
+                    <div class="history-user">
+                        👤 ${item.userName}
+                    </div>
+
+                    <div class="history-date">
+                        ${formatDate(item.createdAt)}
+                    </div>
+
+                </div>
+
+                <div class="history-action">
+                    ${item.action}
+                </div>
+
+                ${
+                    (
+                        item.oldTitle ||
+                        item.oldDescription
+                    ) &&
+                    (
+                        item.newTitle ||
+                        item.newDescription
+                    )
+                    ? `
+
+                    <button
+                        class="history-toggle-btn"
+                        onclick="toggleHistoryDetails(${index})"
+                    >
+                        Ver alteração
+                    </button>
+
+                    <div
+                        id="history-details-${index}"
+                        class="history-details"
+                    >
+
+                        ${
+                            item.oldTitle
+                            ? `
+                            <div class="history-description-box old">
+
+                                <h4>Título anterior</h4>
+
+                                <p>
+                                    ${item.oldTitle}
+                                </p>
+
+                            </div>
+                            `
+                            : ""
+                        }
+
+                        ${
+                            item.newTitle
+                            ? `
+                            <div class="history-description-box new">
+
+                                <h4>Novo título</h4>
+
+                                <p>
+                                    ${item.newTitle}
+                                </p>
+
+                            </div>
+                            `
+                            : ""
+                        }
+
+                        ${
+                            item.oldDescription
+                            ? `
+                            <div class="history-description-box old">
+
+                                <h4>Descrição anterior</h4>
+
+                                <p>
+                                    ${item.oldDescription}
+                                </p>
+
+                            </div>
+                            `
+                            : ""
+                        }
+
+                        ${
+                            item.newDescription
+                            ? `
+                            <div class="history-description-box new">
+
+                                <h4>Nova descrição</h4>
+
+                                <p>
+                                    ${item.newDescription}
+                                </p>
+
+                            </div>
+                            `
+                            : ""
+                        }
+
+                    </div>
+
+                    `
+                    : ""
+                }
+
+            </div>
+
+        `).join("");
+    }
+
+    /* ================= MODAL ================= */
 
     content.innerHTML = `
 
@@ -684,10 +884,19 @@ function openTaskModal(taskId) {
             ${task.description || "Sem descrição"}
         </p>
 
+        <hr>
+
+        <h3>Histórico</h3>
+
+        <div class="task-history">
+            ${historyHtml}
+        </div>
+
     `;
 
     overlay.style.display = "flex";
 }
+ 
 
 /* ================= FECHAR MODAL ================= */
 
@@ -697,6 +906,21 @@ function closeTaskModal() {
         document.getElementById("taskModalOverlay");
 
     overlay.style.display = "none";
+}
+
+
+/* ================= TOGGLE HISTÓRICO ================= */
+
+function toggleHistoryDetails(index) {
+
+    const el =
+        document.getElementById(
+            `history-details-${index}`
+        );
+
+    if (!el) return;
+
+    el.classList.toggle("open");
 }
 
 /* ================= EVENTOS MODAL ================= */

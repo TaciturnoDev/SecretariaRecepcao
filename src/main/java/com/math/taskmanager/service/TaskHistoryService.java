@@ -17,25 +17,46 @@ public class TaskHistoryService {
     private final TaskHistoryRepository repository;
 
     /* ==================== REGISTRAR HISTÓRICO ===================*/
-    
+
     public void register(
             Task task,
             User user,
-            String action
+            String action,
+            String oldTitle,
+            String newTitle,
+            String oldDescription,
+            String newDescription
     ) {
 
         TaskHistory history = TaskHistory.builder()
+
                 .task(task)
+
                 .user(user)
+
                 .action(action)
+
+                /* ================= SNAPSHOT ================= */
+
+                .oldTitle(oldTitle)
+
+                .newTitle(newTitle)
+
+                .oldDescription(oldDescription)
+
+                .newDescription(newDescription)
+
+                /* ================= DATA ================= */
+
                 .createdAt(LocalDateTime.now())
+
                 .build();
 
         repository.save(history);
     }
 
     /* ================= LISTAR HISTÓRICO ===================== */
-   
+
     public List<TaskHistory> findByTask(Long taskId) {
 
         return repository.findByTaskIdOrderByCreatedAtDesc(taskId);

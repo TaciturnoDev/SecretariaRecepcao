@@ -4,6 +4,7 @@ import com.math.taskmanager.entity.TaskPriority;
 import com.math.taskmanager.entity.TaskStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TaskResponseDTO(
 
@@ -21,6 +22,8 @@ public record TaskResponseDTO(
         String assignedToName,
 
         Long createdById,
-        String createdByName
+        String createdByName,
+
+        List<TaskHistoryResponseDTO> history
 
 ) {}

@@ -32,6 +32,26 @@ public class TaskHistory {
     @Column(columnDefinition = "TEXT")
     private String action;
 
+    /* =====================================================
+       SNAPSHOT ANTIGO
+    ===================================================== */
+
+    @Column(columnDefinition = "TEXT")
+    private String oldTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String oldDescription;
+
+    /* =====================================================
+       SNAPSHOT NOVO
+    ===================================================== */
+
+    @Column(columnDefinition = "TEXT")
+    private String newTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String newDescription;
+
     /* ================= DATA ================= */
     private LocalDateTime createdAt;
 }
