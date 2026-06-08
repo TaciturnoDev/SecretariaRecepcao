@@ -21,6 +21,7 @@ import java.util.List;
  */
 @SQLDelete(sql = "UPDATE tasks SET active = false WHERE id = ?")
 
+
 /*
  * Ignora registros inativos automaticamente
  */

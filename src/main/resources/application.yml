@@ -4,3 +4,12 @@ spring:
 
   profiles:
     active: prod
+
+  servlet:
+    multipart:
+      max-file-size: 60MB
+      max-request-size: 60MB
+
+app:
+  upload:
+    base-path: E:/Uploads/Tasks

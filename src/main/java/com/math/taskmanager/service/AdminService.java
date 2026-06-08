@@ -18,6 +18,8 @@ import com.math.taskmanager.dto.TaskResponseDTO;
 import java.util.List;
 import com.math.taskmanager.dto.TaskHistoryResponseDTO;
 
+import com.math.taskmanager.dto.AttachmentResponseDTO;
+
 @Service
 @RequiredArgsConstructor
 public class AdminService {
@@ -146,23 +148,41 @@ public class AdminService {
 
                 task.getHistory() != null
                 ? task.getHistory().stream()
-                .map(history -> new TaskHistoryResponseDTO(
+                		.map(history -> new TaskHistoryResponseDTO(
 
-                        history.getId(),
+                		        history.getId(),
 
-                        history.getAction(),
+                		        history.getAction(),
 
-                        history.getUser().getName(),
+                		        history.getUser() != null
+                		                ? history.getUser().getName()
+                		                : "Sistema",
 
-                        history.getOldTitle(),
-                        history.getNewTitle(),
+                		        history.getOldTitle(),
+                		        history.getNewTitle(),
 
-                        history.getOldDescription(),
-                        history.getNewDescription(),
+                		        history.getOldDescription(),
+                		        history.getNewDescription(),
 
-                        history.getCreatedAt()
+                		        history.getCreatedAt(),
 
-                ))
+                		        history.getAttachments() != null
+                		                ? history.getAttachments().stream()
+                		                .map(att -> new AttachmentResponseDTO(
+
+                		                        att.getId(),
+
+                		                        att.getOriginalFileName(),
+
+                		                        att.getFileSize(),
+
+                		                        att.getContentType()
+
+                		                ))
+                		                .toList()
+                		                : List.of()
+
+                		))
                 .toList()
                 : List.of()
         );

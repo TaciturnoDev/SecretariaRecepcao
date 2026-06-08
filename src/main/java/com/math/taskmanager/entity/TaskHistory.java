@@ -27,7 +27,16 @@ public class TaskHistory {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    
+    /* ================= ANEXOS ==================*/
+    
+    @OneToMany(
+    		mappedBy = "history",
+    		cascade = CascadeType.ALL
+    		)
+    private java.util.List<Attachment> attachments;
 
+    
     /* ================= AÇÃO ================= */
     @Column(columnDefinition = "TEXT")
     private String action;
