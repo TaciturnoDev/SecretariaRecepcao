@@ -16,9 +16,9 @@ public class TaskHistoryService {
 
     private final TaskHistoryRepository repository;
 
-    /* ==================== REGISTRAR HISTÓRICO ===================*/
+    /* ================= REGISTRAR HISTÓRICO ================= */
 
-    public void register(
+    public TaskHistory register(
             Task task,
             User user,
             String action,
@@ -36,8 +36,6 @@ public class TaskHistoryService {
 
                 .action(action)
 
-                /* ================= SNAPSHOT ================= */
-
                 .oldTitle(oldTitle)
 
                 .newTitle(newTitle)
@@ -46,16 +44,14 @@ public class TaskHistoryService {
 
                 .newDescription(newDescription)
 
-                /* ================= DATA ================= */
-
                 .createdAt(LocalDateTime.now())
 
                 .build();
 
-        repository.save(history);
+        return repository.save(history);
     }
 
-    /* ================= LISTAR HISTÓRICO ===================== */
+    /* ================= LISTAR HISTÓRICO ================= */
 
     public List<TaskHistory> findByTask(Long taskId) {
 

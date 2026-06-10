@@ -750,6 +750,41 @@ async function openTaskModal(taskId) {
                     ${item.action}
                 </div>
 
+			
+				${
+				    item.attachments &&
+				    item.attachments.length > 0
+				    ? `
+
+				    <div class="history-attachments">
+
+				        <h4>Anexos</h4>
+
+				        ${item.attachments.map(att => `
+
+				            <div class="attachment-item">
+
+				                <a
+				                    href="/attachments/download/${att.id}"
+				                    target="_blank"
+				                >
+				                    📎 ${att.originalFileName}
+				                </a>
+
+				                <span>
+				                    (${(att.fileSize / 1024).toFixed(1)} KB)
+				                </span>
+
+				            </div>
+
+				        `).join("")}
+
+				    </div>
+
+				    `
+				    : ""
+				}
+				
                 ${
                     (
                         item.oldTitle ||
@@ -886,13 +921,30 @@ async function openTaskModal(taskId) {
 
         <hr>
 
-        <h3>Histórico</h3>
+		    <h3>Histórico</h3>
 
-        <div class="task-history">
-            ${historyHtml}
-        </div>
+		    <div class="task-history">
+		        ${historyHtml}
+		    </div>
 
-    `;
+		    <hr>
+
+		    <h3>Anexar arquivo</h3>
+
+		    <input
+		        type="file"
+		        id="taskAttachmentFile"
+		    >
+
+		    <br><br>
+
+		    <button
+		        onclick="uploadAttachment(${task.id})"
+		    >
+		        Enviar arquivo
+		    </button>
+
+		`;
 
     overlay.style.display = "flex";
 }
@@ -943,5 +995,73 @@ document.addEventListener("DOMContentLoaded", () => {
             closeTaskModal();
         }
     });
+	
+	/* ================= UPLOAD DE ANEXO ================= */
+
+	/*async function uploadAttachment(taskId) {*/
+		window.uploadAttachment = async function (taskId) {
+
+	    const input =
+	        document.getElementById(
+	            "taskAttachmentFile"
+	        );
+
+	    if (!input || input.files.length === 0) {
+
+	        alert("Selecione um arquivo.");
+
+	        return;
+	    }
+
+	    const formData =
+	        new FormData();
+
+	    formData.append(
+	        "file",
+	        input.files[0]
+	    );
+
+	    try {
+
+	        const response =
+	            await fetch(
+
+	                `/attachments/upload/${taskId}`,
+
+	                {
+	                    method: "POST",
+
+	                    body: formData
+	                }
+	            );
+
+	        if (response.ok) {
+
+	            alert(
+	                "Arquivo enviado com sucesso."
+	            );
+
+	            await carregarTarefas();
+
+	            closeTaskModal();
+
+	            openTaskModal(taskId);
+
+	        } else {
+
+	            alert(
+	                "Erro ao enviar arquivo."
+	            );
+	        }
+
+	    } catch (e) {
+
+	        console.error(e);
+
+	        alert(
+	            "Erro ao enviar arquivo."
+	        );
+	    }
+	}
 
 });

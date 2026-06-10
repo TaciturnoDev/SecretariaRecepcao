@@ -419,41 +419,50 @@ public class TaskService {
 
                 task.getHistory() != null
                 ? task.getHistory().stream()
-                		.map(history -> new TaskHistoryResponseDTO(
+                .map(history -> new TaskHistoryResponseDTO(
 
-                		        history.getId(),
+                        history.getId(),
 
-                		        history.getAction(),
+                        history.getAction(),
 
-                		        history.getUser() != null
-                		                ? history.getUser().getName()
-                		                : "Sistema",
+                        history.getUser() != null
+                                ? history.getUser().getName()
+                                : "Sistema",
 
-                		        history.getOldTitle(),
-                		        history.getNewTitle(),
+                        history.getOldTitle(),
+                        history.getNewTitle(),
 
-                		        history.getOldDescription(),
-                		        history.getNewDescription(),
+                        history.getOldDescription(),
+                        history.getNewDescription(),
 
-                		        history.getCreatedAt(),
+                        history.getCreatedAt(),
 
-                		        history.getAttachments() != null
-                		                ? history.getAttachments().stream()
-                		                .map(att -> new AttachmentResponseDTO(
+                        history.getAttachments() != null
+                                ? history.getAttachments().stream()
 
-                		                        att.getId(),
+                                .filter(att ->
+                                        Boolean.TRUE.equals(
+                                                att.getActive()
+                                        )
+                                )
 
-                		                        att.getOriginalFileName(),
+                                .map(att -> new AttachmentResponseDTO(
 
-                		                        att.getFileSize(),
+                                        att.getId(),
 
-                		                        att.getContentType()
+                                        att.getOriginalFileName(),
 
-                		                ))
-                		                .toList()
-                		                : List.of()
+                                        att.getFileSize(),
 
-                		))
+                                        att.getContentType()
+
+                                ))
+
+                                .toList()
+
+                                : List.of()
+
+                ))
                 .toList()
                 : List.of()
         );        
