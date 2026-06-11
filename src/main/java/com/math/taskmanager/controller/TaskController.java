@@ -77,6 +77,27 @@ public class TaskController {
         );
     }
 
+    
+    /* ===================================================== */
+    /* BUSCAR TAREFA POR ID                                  */
+    /* ===================================================== */
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> findById(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+
+        String login = authentication.getName();
+
+        return ResponseEntity.ok(
+                taskService.findById(
+                        id,
+                        login
+                )
+        );
+    }
+    
     /* ===================================================== */
     /*  DELETAR TAREFA                                   */
     /* ===================================================== */

@@ -152,6 +152,47 @@ public class TaskService {
 
         return page.map(this::mapToResponse);
     }
+    
+    /* ===================================================== */
+    /* BUSCAR TAREFA POR ID                                  */
+    /* ===================================================== */
+
+    public TaskResponseDTO findById(
+            Long id,
+            String login
+    ) {
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Tarefa não encontrada"
+                        )
+                );
+
+        User user = userService.findByLogin(login);
+
+        // SUPERADMIN pode visualizar tudo
+        if (user.getRole() == Role.SUPERADMIN) {
+            return mapToResponse(task);
+        }
+
+        if (user.getSector() == null) {
+            throw new BusinessRuleException(
+                    "Usuário sem setor."
+            );
+        }
+
+        if (!task.getSector().getId().equals(
+                user.getSector().getId()
+        )) {
+
+            throw new BusinessRuleException(
+                    "Você não pode visualizar tarefas de outro setor."
+            );
+        }
+
+        return mapToResponse(task);
+    }
 
     /* ===================================================== */
     /* ATUALIZAR TAREFA                                      */

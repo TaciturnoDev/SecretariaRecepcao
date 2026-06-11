@@ -692,6 +692,54 @@ async function carregarTarefas() {
     }
 }
 
+
+/* ================= ATUALIZAR UMA TAREFA ================= */
+
+async function refreshTask(taskId) {
+
+    try {
+
+        const response =
+            await fetch(`/tasks/${taskId}`);
+
+        if (!response.ok) {
+            throw new Error(
+                "Erro ao atualizar tarefa."
+            );
+        }
+
+        const updatedTask =
+            await response.json();
+
+        const index =
+            tasks.findIndex(
+                t => t.id === taskId
+            );
+
+        if (index >= 0) {
+
+            tasks[index] =
+                updatedTask;
+
+        } else {
+
+            tasks.push(
+                updatedTask
+            );
+        }
+
+        aplicarFiltros();
+
+        return updatedTask;
+
+    } catch (e) {
+
+        console.error(e);
+
+        return null;
+    }
+}
+
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -708,22 +756,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+/* ================= RENDER MODAL ================= */
 
-/* ================= MODAL TAREFA ================= */
-
-async function openTaskModal(taskId) {
-
-    const task = tasks.find(t => t.id === taskId);
-
-    if (!task) return;
+function renderTaskModal(task) {
 
     const overlay =
         document.getElementById("taskModalOverlay");
 
     const content =
         document.getElementById("taskModalContent");
-
-    /* ================= HISTÓRICO ================= */
 
     let historyHtml =
         "<p>Nenhum histórico.</p>";
@@ -750,41 +791,40 @@ async function openTaskModal(taskId) {
                     ${item.action}
                 </div>
 
-			
-				${
-				    item.attachments &&
-				    item.attachments.length > 0
-				    ? `
+                ${
+                    item.attachments &&
+                    item.attachments.length > 0
+                    ? `
 
-				    <div class="history-attachments">
+                    <div class="history-attachments">
 
-				        <h4>Anexos</h4>
+                        <h4>Anexos</h4>
 
-				        ${item.attachments.map(att => `
+                        ${item.attachments.map(att => `
 
-				            <div class="attachment-item">
+                            <div class="attachment-item">
 
-				                <a
-				                    href="/attachments/download/${att.id}"
-				                    target="_blank"
-				                >
-				                    📎 ${att.originalFileName}
-				                </a>
+                                <a
+                                    href="/attachments/download/${att.id}"
+                                    target="_blank"
+                                >
+                                    📎 ${att.originalFileName}
+                                </a>
 
-				                <span>
-				                    (${(att.fileSize / 1024).toFixed(1)} KB)
-				                </span>
+                                <span>
+                                    (${(att.fileSize / 1024).toFixed(1)} KB)
+                                </span>
 
-				            </div>
+                            </div>
 
-				        `).join("")}
+                        `).join("")}
 
-				    </div>
+                    </div>
 
-				    `
-				    : ""
-				}
-				
+                    `
+                    : ""
+                }
+
                 ${
                     (
                         item.oldTitle ||
@@ -812,13 +852,8 @@ async function openTaskModal(taskId) {
                             item.oldTitle
                             ? `
                             <div class="history-description-box old">
-
                                 <h4>Título anterior</h4>
-
-                                <p>
-                                    ${item.oldTitle}
-                                </p>
-
+                                <p>${item.oldTitle}</p>
                             </div>
                             `
                             : ""
@@ -828,13 +863,8 @@ async function openTaskModal(taskId) {
                             item.newTitle
                             ? `
                             <div class="history-description-box new">
-
                                 <h4>Novo título</h4>
-
-                                <p>
-                                    ${item.newTitle}
-                                </p>
-
+                                <p>${item.newTitle}</p>
                             </div>
                             `
                             : ""
@@ -844,13 +874,8 @@ async function openTaskModal(taskId) {
                             item.oldDescription
                             ? `
                             <div class="history-description-box old">
-
                                 <h4>Descrição anterior</h4>
-
-                                <p>
-                                    ${item.oldDescription}
-                                </p>
-
+                                <p>${item.oldDescription}</p>
                             </div>
                             `
                             : ""
@@ -860,13 +885,8 @@ async function openTaskModal(taskId) {
                             item.newDescription
                             ? `
                             <div class="history-description-box new">
-
                                 <h4>Nova descrição</h4>
-
-                                <p>
-                                    ${item.newDescription}
-                                </p>
-
+                                <p>${item.newDescription}</p>
                             </div>
                             `
                             : ""
@@ -882,8 +902,6 @@ async function openTaskModal(taskId) {
 
         `).join("");
     }
-
-    /* ================= MODAL ================= */
 
     content.innerHTML = `
 
@@ -921,34 +939,45 @@ async function openTaskModal(taskId) {
 
         <hr>
 
-		    <h3>Histórico</h3>
+        <h3>Histórico</h3>
 
-		    <div class="task-history">
-		        ${historyHtml}
-		    </div>
+        <div class="task-history">
+            ${historyHtml}
+        </div>
 
-		    <hr>
+        <hr>
 
-		    <h3>Anexar arquivo</h3>
+        <h3>Anexar arquivo</h3>
 
-		    <input
-		        type="file"
-		        id="taskAttachmentFile"
-		    >
+        <input
+            type="file"
+            id="taskAttachmentFile"
+        >
 
-		    <br><br>
+        <br><br>
 
-		    <button
-		        onclick="uploadAttachment(${task.id})"
-		    >
-		        Enviar arquivo
-		    </button>
+        <button
+            onclick="uploadAttachment(${task.id})"
+        >
+            Enviar arquivo
+        </button>
 
-		`;
+    `;
 
     overlay.style.display = "flex";
 }
- 
+
+/* ================= MODAL TAREFA ================= */
+
+async function openTaskModal(taskId) {
+
+    const task =
+        tasks.find(t => t.id === taskId);
+
+    if (!task) return;
+
+    renderTaskModal(task);
+}
 
 /* ================= FECHAR MODAL ================= */
 
@@ -1041,11 +1070,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	                "Arquivo enviado com sucesso."
 	            );
 
-	            await carregarTarefas();
+				const updatedTask =
+				    await refreshTask(taskId);
 
-	            closeTaskModal();
+				if (updatedTask) {
 
-	            openTaskModal(taskId);
+				    renderTaskModal(updatedTask);
+
+				}
 
 	        } else {
 
