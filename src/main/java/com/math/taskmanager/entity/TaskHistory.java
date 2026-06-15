@@ -3,6 +3,7 @@ package com.math.taskmanager.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,10 +32,13 @@ public class TaskHistory {
     /* ================= ANEXOS ==================*/
     
     @OneToMany(
-    		mappedBy = "history",
-    		cascade = CascadeType.ALL
-    		)
-    private java.util.List<Attachment> attachments;
+    	    mappedBy = "history",
+    	    cascade = {
+    	        CascadeType.PERSIST,
+    	        CascadeType.MERGE
+    	    }
+    	)
+    	private List<Attachment> attachments;
 
     
     /* ================= AÇÃO ================= */

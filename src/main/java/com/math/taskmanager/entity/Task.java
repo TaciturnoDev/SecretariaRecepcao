@@ -86,8 +86,14 @@ public class Task extends BaseEntity {
     /*
      *  HISTÓRICO DA TAREFA (CORREÇÃO)
      */
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TaskHistory> history;
+    @OneToMany(
+    	    mappedBy = "task",
+    	    cascade = {
+    	        CascadeType.PERSIST,
+    	        CascadeType.MERGE
+    	    }
+    	)
+    	private List<TaskHistory> history;
 
     @PrePersist
     public void prePersist() {

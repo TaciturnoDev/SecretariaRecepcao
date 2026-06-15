@@ -909,58 +909,119 @@ function renderTaskModal(task) {
 
         <hr>
 
-        <p>
-            <strong>Status:</strong>
-            ${getStatusLabel(task.status)}
-        </p>
+		<div class="task-info-grid">
 
-        <p>
-            <strong>Prioridade:</strong>
-            ${getPriorityLabel(task.priority)}
-        </p>
+		    <div class="task-info-card">
 
-        <p>
-            <strong>Criado por:</strong>
-            ${task.createdByName || "-"}
-        </p>
+		        <span>Status</span>
 
-        <p>
-            <strong>Responsável:</strong>
-            ${task.assignedToName || "-"}
-        </p>
+		        <strong>
+		            ${getStatusLabel(task.status)}
+		        </strong>
+
+		    </div>
+
+		    <div class="task-info-card">
+
+		        <span>Prioridade</span>
+
+		        <strong>
+		            ${getPriorityLabel(task.priority)}
+		        </strong>
+
+		    </div>
+
+		    <div class="task-info-card">
+
+		        <span>Criado por</span>
+
+		        <strong>
+		            ${task.createdByName || "-"}
+		        </strong>
+
+		    </div>
+
+		    <div class="task-info-card">
+
+		        <span>Responsável</span>
+
+		        <strong>
+		            ${task.assignedToName || "-"}
+		        </strong>
+
+		    </div>
+
+		</div>
 
         <hr>
 
-        <h3>Descrição</h3>
+		<div class="modal-section">
 
-        <p>
-            ${task.description || "Sem descrição"}
-        </p>
+		    <h3>Descrição</h3>
 
-        <hr>
+		    <div class="task-description-card">
 
-        <h3>Histórico</h3>
+		        ${task.description || "Sem descrição"}
 
-        <div class="task-history">
-            ${historyHtml}
-        </div>
+		    </div>
+
+		</div>
 
         <hr>
 
-        <h3>Anexar arquivo</h3>
+		<div class="modal-section">
 
-        <input
-            type="file"
-            id="taskAttachmentFile"
-        >
+		    <h3>Histórico</h3>
 
-        <br><br>
+		    <div class="task-history">
 
-        <button
-            onclick="uploadAttachment(${task.id})"
-        >
-            Enviar arquivo
-        </button>
+		        ${historyHtml}
+
+		    </div>
+
+		</div>
+
+        <hr>
+
+		<div class="modal-section">
+
+		    <h3>Anexar arquivo</h3>
+
+		    <div class="upload-area">
+
+		        <input
+		            type="file"
+		            id="taskAttachmentFile"
+		        >
+
+		        <div class="upload-placeholder">
+
+		            <div class="upload-icon">
+		                📎
+		            </div>
+
+		            <div class="upload-text">
+
+		                Selecione um arquivo
+
+		                <small>
+		                    Documentos, imagens, áudio ou vídeo
+		                </small>
+
+		            </div>
+
+		        </div>
+
+		    </div>
+
+		    <button
+		        class="upload-btn"
+		        onclick="uploadAttachment(${task.id})"
+		    >
+		        Enviar arquivo
+		    </button>
+
+		</div>
 
     `;
 
@@ -1046,7 +1107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	        new FormData();
 
 	    formData.append(
-	        "file",
+	        "file",  
 	        input.files[0]
 	    );
 
