@@ -70,6 +70,43 @@ public class AttachmentController {
     }
 
     
+    /*
+     * =====================================================
+     * Atualizar arquivo existente
+     * =====================================================
+     */
+    @PostMapping("/replace/{attachmentId}")
+    public ResponseEntity<Attachment> replace(
+
+            @PathVariable
+            Long attachmentId,
+
+            @RequestParam("file")
+            MultipartFile file,
+
+            Authentication authentication
+
+    ) throws IOException {
+
+        String login =
+                authentication.getName();
+
+        Attachment attachment =
+                attachmentWorkFlowService
+                        .replaceAttachment(
+
+                                attachmentId,
+
+                                file,
+
+                                login
+                        );
+
+        return ResponseEntity.ok(
+                attachment
+        );
+    }
+    
     
     /*
      * =====================================================

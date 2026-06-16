@@ -107,6 +107,93 @@ public class AttachmentWorkFlowService {
         );
     }
     
+    
+    /**
+     * =====================================================
+     * Atualizar arquivo existente
+     * =====================================================
+     */
+    public Attachment replaceAttachment(
+            Long attachmentId,
+            MultipartFile file,
+            String login
+    ) throws IOException {
+
+        /* ================= USUÁRIO ================= */
+
+        User user =
+                userService.findByLogin(login);
+
+        /* ================= ANEXO ANTIGO ================= */
+
+        Attachment oldAttachment =
+                attachmentService.findById(
+                        attachmentId
+                );
+
+        TaskHistory history =
+                oldAttachment.getHistory();
+
+        Task task =
+                history.getTask();
+
+        /* ================= PERMISSÃO ================= */
+
+        if (!user.isSuperAdmin()) {
+
+            if (user.getSector() == null) {
+
+                throw new RuntimeException(
+                        "Usuário sem setor."
+                );
+            }
+
+            if (!task
+                    .getSector()
+                    .getId()
+                    .equals(
+                            user.getSector().getId()
+                    )) {
+
+                throw new RuntimeException(
+                        "Você não pode atualizar arquivos de outro setor."
+                );
+            }
+        }
+
+        /* ================= DESATIVA ANEXO ANTIGO ================= */
+
+        attachmentService.deactivateAttachment(
+                attachmentId
+        );
+
+        /* ================= HISTÓRICO ================= */
+
+        TaskHistory newHistory =
+                taskHistoryService.register(
+
+                        task,
+
+                        user,
+
+                        "Atualizou o arquivo: "
+                                + oldAttachment.getOriginalFileName(),
+
+                        null,
+                        null,
+
+                        null,
+                        null
+                );
+
+        /* ================= NOVO ANEXO ================= */
+
+        return attachmentService.saveAttachment(
+                file,
+                newHistory
+        );
+    }
+    
     /**
      * =====================================================
      * Download de arquivo com validação de acesso

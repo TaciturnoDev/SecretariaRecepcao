@@ -5,6 +5,7 @@ let tasks = [];
 let filteredTasks = [];
 let currentPage = 1;
 let editingTaskId = null;
+let attachmentToReplace = null;
 
 const ITEMS_PER_PAGE = 6;
 
@@ -800,24 +801,31 @@ function renderTaskModal(task) {
 
                         <h4>Anexos</h4>
 
-                        ${item.attachments.map(att => `
+						${item.attachments.map(att => `
 
-                            <div class="attachment-item">
+						    <div class="attachment-item">
 
-                                <a
-                                    href="/attachments/download/${att.id}"
-                                    target="_blank"
-                                >
-                                    📎 ${att.originalFileName}
-                                </a>
+						        <a
+						            href="/attachments/download/${att.id}"
+						            target="_blank"
+						        >
+						            📎 ${att.originalFileName}
+						        </a>
 
-                                <span>
-                                    (${(att.fileSize / 1024).toFixed(1)} KB)
-                                </span>
+						        <span>
+						            (${(att.fileSize / 1024).toFixed(1)} KB)
+						        </span>
 
-                            </div>
+						        <button
+						            class="attachment-update-btn"
+						            onclick="selectAttachmentUpdate(${att.id})"
+						        >
+						            Atualizar arquivo
+						        </button>
 
-                        `).join("")}
+						    </div>
+
+						`).join("")}
 
                     </div>
 
@@ -993,6 +1001,12 @@ function renderTaskModal(task) {
 		            type="file"
 		            id="taskAttachmentFile"
 		        >
+				
+				<input
+				    type="file"
+				    id="replaceAttachmentFile"
+				    style="display:none"
+				>
 
 		        <div class="upload-placeholder">
 
@@ -1051,6 +1065,101 @@ function closeTaskModal() {
 }
 
 
+/* ================= ATUALIZAR ANEXO ================= */
+
+function selectAttachmentUpdate(attachmentId) {
+
+    attachmentToReplace =
+        attachmentId;
+
+    const input =
+        document.getElementById(
+            "replaceAttachmentFile"
+        );
+
+    if (!input) {
+
+        alert(
+            "Campo de atualização não encontrado."
+        );
+
+        return;
+    }
+
+    input.onchange = async function () {
+
+        if (this.files.length === 0) {
+            return;
+        }
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "file",
+            this.files[0]
+        );
+
+        try {
+
+            const response =
+                await fetch(
+                    `/attachments/replace/${attachmentToReplace}`,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+            if (response.ok) {
+
+                alert(
+                    "Arquivo atualizado com sucesso."
+                );
+
+                const updatedTask =
+                    await refreshTask(
+                        tasks.find(t =>
+                            t.history?.some(h =>
+                                h.attachments?.some(a =>
+                                    a.id === attachmentToReplace
+                                )
+                            )
+                        )?.id
+                    );
+
+                if (updatedTask) {
+
+                    renderTaskModal(
+                        updatedTask
+                    );
+                }
+
+            } else {
+
+                alert(
+                    "Erro ao atualizar arquivo."
+                );
+            }
+
+        } catch (e) {
+
+            console.error(e);
+
+            alert(
+                "Erro ao atualizar arquivo."
+            );
+        }
+
+        this.value = "";
+
+        attachmentToReplace =
+            null;
+    };
+
+    input.click();
+}
+
 /* ================= TOGGLE HISTÓRICO ================= */
 
 function toggleHistoryDetails(index) {
@@ -1076,15 +1185,28 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("closeTaskModalBtn");
 
     /* FECHAR NO X */
-    closeBtn?.addEventListener("click", closeTaskModal);
+    closeBtn?.addEventListener(
+        "click",
+        closeTaskModal
+    );
 
     /* FECHAR CLICANDO FORA */
-    overlay?.addEventListener("click", (e) => {
+    overlay?.addEventListener(
+        "click",
+        (e) => {
 
-        if (e.target.id === "taskModalOverlay") {
-            closeTaskModal();
+            if (
+                e.target.id ===
+                "taskModalOverlay"
+            ) {
+                closeTaskModal();
+            }
         }
-    });
+    );
+
+});
+		
+
 	
 	/* ================= UPLOAD DE ANEXO ================= */
 
@@ -1155,6 +1277,5 @@ document.addEventListener("DOMContentLoaded", () => {
 	            "Erro ao enviar arquivo."
 	        );
 	    }
-	}
+     }
 
-});
