@@ -27,6 +27,8 @@ public class AttachmentWorkFlowService {
     private final TaskHistoryService taskHistoryService;
 
     private final AttachmentService attachmentService;
+    
+    private final TaskService taskService;
 
     /**
      * =====================================================
@@ -98,6 +100,12 @@ public class AttachmentWorkFlowService {
                         null,
                         null
                 );
+        
+        
+        
+        /* ================= MOVIMENTAÇÃO ================= */
+
+        taskService.touchTask(task);
 
         /* ================= ANEXO ================= */
 
@@ -108,9 +116,11 @@ public class AttachmentWorkFlowService {
     }
     
     
+    
+    
     /**
      * =====================================================
-     * Atualizar arquivo existente
+     * Atualiza arquivo existente
      * =====================================================
      */
     public Attachment replaceAttachment(
@@ -185,6 +195,12 @@ public class AttachmentWorkFlowService {
                         null,
                         null
                 );
+        
+        
+        /* ================= MOVIMENTAÇÃO ================= */
+
+        taskService.touchTask(task);
+        
 
         /* ================= NOVO ANEXO ================= */
 

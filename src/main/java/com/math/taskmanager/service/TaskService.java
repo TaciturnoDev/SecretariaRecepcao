@@ -15,6 +15,7 @@ import com.math.taskmanager.repository.TaskHistoryRepository;
 
 import java.util.List;
 import com.math.taskmanager.dto.TaskHistoryResponseDTO;
+import java.time.LocalDateTime;
 
 import com.math.taskmanager.dto.AttachmentResponseDTO;
 
@@ -72,6 +73,7 @@ public class TaskService {
                 .createdBy(user)
                 .assignedTo(user)
                 .sector(sector)
+                .lastMovementAt(LocalDateTime.now())
                 .build();
 
         task = taskRepository.save(task);
@@ -152,6 +154,20 @@ public class TaskService {
 
         return page.map(this::mapToResponse);
     }
+    
+    
+    /* REGISTRO HISTORICO */
+    
+public void touchTask(Task task) {
+	task.setLastMovementAt(
+			LocalDateTime.now()
+			);
+	
+	taskRepository.save(task);
+	
+}
+    
+    
     
     /* ===================================================== */
     /* BUSCAR TAREFA POR ID                                  */
@@ -234,7 +250,11 @@ public class TaskService {
             if (dto.priority() != null) {
                 task.setPriority(dto.priority());
             }
-
+            
+            // ADIÇÃO PARA URGENCIA EM DIAS
+            touch(task); 
+            
+           
             Task updatedTask = taskRepository.save(task);
 
             registerUpdateHistory(
@@ -276,6 +296,9 @@ public class TaskService {
             task.setPriority(dto.priority());
         }
 
+        /* segundo save */
+        touch(task);
+        
         Task updatedTask = taskRepository.save(task);
 
         registerUpdateHistory(
@@ -369,14 +392,9 @@ public class TaskService {
             taskHistoryService.register(
                     task,
                     user,
-                    "Alterou status de "
-                            + oldStatus
-                            + " para "
-                            + task.getStatus().name(),
-
+                    "Alterou status de " + oldStatus + " para " + task.getStatus().name(),
                     null,
                     null,
-
                     null,
                     null
             );
@@ -389,14 +407,9 @@ public class TaskService {
             taskHistoryService.register(
                     task,
                     user,
-                    "Alterou prioridade de "
-                            + oldPriority
-                            + " para "
-                            + task.getPriority().name(),
-
+                    "Alterou prioridade de " + oldPriority + " para " + task.getPriority().name(),
                     null,
                     null,
-
                     null,
                     null
             );
@@ -405,12 +418,10 @@ public class TaskService {
         /* ================= ALTERAÇÃO DE CONTEÚDO ================= */
 
         boolean titleChanged =
-                oldTitle != null &&
-                !oldTitle.equals(task.getTitle());
+                oldTitle != null && !oldTitle.equals(task.getTitle());
 
         boolean descriptionChanged =
-                oldDescription != null &&
-                !oldDescription.equals(task.getDescription());
+                oldDescription != null && !oldDescription.equals(task.getDescription());
 
         if (titleChanged || descriptionChanged) {
 
@@ -418,15 +429,20 @@ public class TaskService {
                     task,
                     user,
                     "Atualizou a tarefa",
-
                     oldTitle,
                     task.getTitle(),
-
                     oldDescription,
                     task.getDescription()
             );
         }
     }
+    
+    /* 	ADIÇÃO PARA URGENCIA EM DIAS */
+	
+	private void touch(Task task) {
+	    task.setLastMovementAt(LocalDateTime.now());
+	}
+
 
     /* ===================================================== */
     /* MAPPER                                                */

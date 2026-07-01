@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,6 +36,7 @@ public class Task extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    
     @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -58,6 +60,14 @@ public class Task extends BaseEntity {
      */
     @Column(nullable = false)
     private Boolean active = true;
+    
+    
+    /*lastMovementAt
+   
+     */
+    
+    @Column(nullable = false)
+    private LocalDateTime lastMovementAt;
 
     /*
      *  Usuário que criou a tarefa
@@ -108,6 +118,11 @@ public class Task extends BaseEntity {
 
         if (this.active == null) {
             this.active = true;
+        }
+        
+        if (lastMovementAt == null) {
+        	lastMovementAt = LocalDateTime.now();
+        
         }
     }
 }

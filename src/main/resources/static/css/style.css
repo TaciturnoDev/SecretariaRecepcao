@@ -391,7 +391,7 @@ select:focus {
 
     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
-
+ 
 
 /* ========= PRIORIDADES ========= */
 
@@ -1651,6 +1651,31 @@ select:focus {
         0 8px 24px rgba(0,0,0,0.08);
 }
 
+
+/* ============= HISTORICO UNIFICADO ====== */ 
+
+
+.history-change {
+
+    margin-top: 12px;
+
+    padding-top: 12px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+.history-change p {
+
+    margin: 8px 0;
+
+    line-height: 1.5;
+}
+
+.history-change strong {
+
+    color: #1e293b;
+}
+
 /* =====================================================
    HEADER
 ===================================================== */
@@ -1733,20 +1758,15 @@ select:focus {
    DETALHES
 ===================================================== */
 
-.history-details {
+.history-details-open {
 
-    display: none;
+    display: flex;
 
-    margin-top: 14px;
+    flex-direction: column;
 
     gap: 14px;
 
-    flex-direction: column;
-}
-
-.history-details.open {
-
-    display: flex;
+    margin-top: 14px;
 }
 
 /* =====================================================

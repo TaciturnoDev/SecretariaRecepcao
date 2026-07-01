@@ -767,13 +767,74 @@ function renderTaskModal(task) {
     const content =
         document.getElementById("taskModalContent");
 
-    let historyHtml =
-        "<p>Nenhum histórico.</p>";
+		let historyHtml =
+		    "<p>Nenhum histórico.</p>";
 
-    if (task.history && task.history.length > 0) {
+		if (task.history && task.history.length > 0) {
 
-        historyHtml = task.history.map((item, index) => `
+		    const firstHistory =
+		        task.history[task.history.length - 1];
 
+		    const lastHistory =
+		        task.history[0];
+
+		    const resumeHistory = [];
+
+		    if (firstHistory) {
+		        resumeHistory.push(firstHistory);
+		    }
+
+		    if (
+		        lastHistory &&
+		        lastHistory.id !== firstHistory.id
+		    ) {
+		        resumeHistory.push(lastHistory);
+		    }
+
+		    historyHtml = `
+
+		        <div class="history-resume">
+
+		            ${resumeHistory.map((item, index) => `
+
+		                <div class="history-item">
+
+		                    <div class="history-header">
+
+		                        <div class="history-user">
+		                            👤 ${item.userName}
+		                        </div>
+
+		                        <div class="history-date">
+		                            ${formatDate(item.createdAt)}
+		                        </div>
+
+		                    </div>
+
+		                    <div class="history-action">
+		                        ${item.action}
+		                    </div>
+
+		                </div>
+
+		            `).join("")}
+
+		        </div>
+
+		        <button
+		            class="history-expand-btn"
+		            onclick="toggleFullHistory()"
+		        >
+		            Ver histórico completo
+		        </button>
+
+		        <div
+		            id="fullHistoryContainer"
+		            style="display:none;"
+		        >
+
+		            ${task.history.map((item, index) => `
+						
             <div class="history-item">
 
                 <div class="history-header">
@@ -844,72 +905,67 @@ function renderTaskModal(task) {
                     )
                     ? `
 
-                    <button
-                        class="history-toggle-btn"
-                        onclick="toggleHistoryDetails(${index})"
-                    >
-                        Ver alteração
-                    </button>
 
-                    <div
-                        id="history-details-${index}"
-                        class="history-details"
-                    >
+					<div class="history-change">
 
-                        ${
-                            item.oldTitle
-                            ? `
-                            <div class="history-description-box old">
-                                <h4>Título anterior</h4>
-                                <p>${item.oldTitle}</p>
-                            </div>
-                            `
-                            : ""
-                        }
+					    ${
+					        item.oldTitle
+					        ? `
+					        <p>
+					            <strong>Título anterior:</strong>
+					            ${item.oldTitle}
+					        </p>
+					        `
+					        : ""
+					    }
 
-                        ${
-                            item.newTitle
-                            ? `
-                            <div class="history-description-box new">
-                                <h4>Novo título</h4>
-                                <p>${item.newTitle}</p>
-                            </div>
-                            `
-                            : ""
-                        }
+					    ${
+					        item.newTitle
+					        ? `
+					        <p>
+					            <strong>Novo título:</strong>
+					            ${item.newTitle}
+					        </p>
+					        `
+					        : ""
+					    }
 
-                        ${
-                            item.oldDescription
-                            ? `
-                            <div class="history-description-box old">
-                                <h4>Descrição anterior</h4>
-                                <p>${item.oldDescription}</p>
-                            </div>
-                            `
-                            : ""
-                        }
+					    ${
+					        item.oldDescription
+					        ? `
+					        <p>
+					            <strong>Descrição anterior:</strong>
+					            ${item.oldDescription}
+					        </p>
+					        `
+					        : ""
+					    }
 
-                        ${
-                            item.newDescription
-                            ? `
-                            <div class="history-description-box new">
-                                <h4>Nova descrição</h4>
-                                <p>${item.newDescription}</p>
-                            </div>
-                            `
-                            : ""
-                        }
+					    ${
+					        item.newDescription
+					        ? `
+					        <p>
+					            <strong>Nova descrição:</strong>
+					            ${item.newDescription}
+					        </p>
+					        `
+					        : ""
+					    }
 
-                    </div>
+					</div>
 
                     `
                     : ""
                 }
 
-            </div>
+				            </div>
 
-        `).join("");
-    }
+				        `).join("")}
+
+				        </div>
+
+				    `;
+				}
 
     content.innerHTML = `
 
@@ -1173,6 +1229,32 @@ function toggleHistoryDetails(index) {
 
     el.classList.toggle("open");
 }
+
+
+/* =============== HISTORICO EXPANDIDO ================ */
+
+
+function toggleFullHistory() {
+
+    const container =
+        document.getElementById(
+            "fullHistoryContainer"
+        );
+
+    if (!container) return;
+
+    if (
+        container.style.display === "none"
+    ) {
+
+        container.style.display = "block";
+
+    } else {
+
+        container.style.display = "none";
+    }
+}
+ 
 
 /* ================= EVENTOS MODAL ================= */
 
